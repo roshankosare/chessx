@@ -8,7 +8,7 @@ interface TilesStore {
     boardState: BoardState,
     setCurrentPiece: (square: string | null) => void
   ) => void;
-  setTiles: (boardPos: BoardPos, boardState: BoardState) => void;
+  setTiles: (boardPos: BoardPos) => void;
   reverseTiles: () => void;
 
   setPossibleMoves: (moves: string[]) => void;

@@ -55,9 +55,8 @@ const getPieceImage = (value: string): string => {
 const Tile: React.FC<TileProps> = ({ color, piece, id, selected }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const { selectPiece } = useTiles();
+  const { selectPiece, setPossibleMoves } = useTiles();
   const { boardState, setBoardState } = useBoard();
-
 
   return (
     <div
@@ -70,6 +69,9 @@ const Tile: React.FC<TileProps> = ({ color, piece, id, selected }) => {
       }}
       onClick={() => {
         if (boardState.selectedPiece == id) {
+          selected = false;
+          setBoardState("selectedPiece", null);
+          setPossibleMoves([]);
           return;
         }
 
@@ -84,6 +86,7 @@ const Tile: React.FC<TileProps> = ({ color, piece, id, selected }) => {
             setBoardState("selectedPiece", null);
             return;
           }
+
           setBoardState("selectedPiece", square);
         });
       }}

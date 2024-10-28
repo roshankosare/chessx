@@ -127,17 +127,24 @@ export const useGame = () => {
     }
 
     if (boardState.from && boardState.to) {
+      //  console.log("this runs");
       // console.log("from:", boardState.from, " to:", boardState.to);
-      socket.emit("make-move", {
-        from: boardState.from,
-        to: boardState.to,
-        roomId: boardState.roomId,
-        playerId: boardState.playingId,
-      });
-      setBoardState("to", null);
-      setBoardState("from", null);
-      setBoardState("selectedPiece", null);
-      // setPossibleMoves([]);
+      socket.emit(
+        "make-move",
+        {
+          from: boardState.from,
+          to: boardState.to,
+          roomId: boardState.roomId,
+          playerId: boardState.playingId,
+        },
+        () => {
+          setPossibleMoves([]);
+          setBoardState("to", null);
+          setBoardState("from", null);
+          setBoardState("selectedPiece", null);
+        }
+      );
+
       // console.log("this runs");
     }
 
@@ -153,6 +160,17 @@ export const useGame = () => {
       socket.off("pos-moves");
       socket.off("refresh-game-status");
     };
-  }, [socket, boardState, setBoardState, setPossibleMoves]);
+  }, [
+    socket,
+    boardState.from,
+    boardState.to,
+    boardState.gameStarted,
+    boardState.roomId,
+    boardState.playingId,
+    boardState.playingAS,
+    boardState.selectedPiece,
+    setBoardState,
+    setPossibleMoves,
+  ]);
   return { startNewGame, endGame };
 };

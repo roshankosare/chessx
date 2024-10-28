@@ -16,8 +16,8 @@ const Board: React.FC<BoardProps> = ({ size }) => {
   const { tiles, setTiles, reverseTiles } = useTiles();
   const { boardState } = useBoard();
   useEffect(() => {
-    if (boardState.boardPos) setTiles(boardState.boardPos, boardState);
-  }, [boardState.boardPos, setTiles, boardState]);
+    if (boardState.boardPos) setTiles(boardState.boardPos);
+  }, [boardState.boardPos, setTiles]);
 
   useEffect(() => {
     if (boardState.playingAS == "b") {
@@ -25,7 +25,6 @@ const Board: React.FC<BoardProps> = ({ size }) => {
     }
   }, [boardState.playingAS, reverseTiles]);
 
- 
   return (
     <div
       className="grid grid-cols-8 grid-rows-8 bg-amber-950 mx-auto my-auto rounded-md border-4 border-gray-800 p-4 gap-0"
