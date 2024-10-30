@@ -33,9 +33,9 @@ const Board: React.FC<BoardProps> = ({ size }) => {
         height: hight,
       }}
     >
-      {tiles.map((t, index) => (
+      {tiles.map((t) => (
         <Tile
-          key={index}
+          key={t.id}
           color={t.color}
           piece={t.piece}
           selected={t.selected}

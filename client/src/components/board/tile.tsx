@@ -1,7 +1,7 @@
 import { Piece } from "@/types";
 import React, { useState } from "react";
-import { useTiles } from "./useTiles";
-import { useBoard } from "./useBoard";
+
+import { useGame } from "./useGame";
 
 export interface TileProps {
   color: string;
@@ -54,9 +54,7 @@ const getPieceImage = (value: string): string => {
 };
 const Tile: React.FC<TileProps> = ({ color, piece, id, selected }) => {
   const [isHovered, setIsHovered] = useState(false);
-
-  const { selectPiece, setPossibleMoves } = useTiles();
-  const { boardState, setBoardState } = useBoard();
+  const { selectSquare } = useGame();
 
   return (
     <div
@@ -67,32 +65,7 @@ const Tile: React.FC<TileProps> = ({ color, piece, id, selected }) => {
             ? "inset 0 0 12px 4px rgba(0, 0, 0, 0.6)"
             : "none",
       }}
-      onClick={() => {
-        console.log("this runs");
-        if (boardState.selectedPiece == id) {
-          selected = false;
-          setBoardState("selectedPiece", null);
-          setPossibleMoves([]);
-          return;
-        }
-
-        if (boardState.selectedPiece && boardState.selectedPiece != id) {
-          if (selected) {
-            setBoardState("from", boardState.selectedPiece);
-            setBoardState("to", id);
-            setBoardState("selectedPiece", null);
-            setPossibleMoves([]);
-            return;
-          }
-        }
-        selectPiece(id, boardState, (square: string | null) => {
-          if (boardState.selectedPiece == square) {
-            setBoardState("selectedPiece", null);
-            return;
-          }
-          setBoardState("selectedPiece", square);
-        });
-      }}
+      onClick={() => selectSquare(id, selected)}
       className={`flex justify-center items-center w-full h-full  transition-all 
         hover:bg-teal-400 focus:bg-teal-400 `}
       onMouseEnter={() => {

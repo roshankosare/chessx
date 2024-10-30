@@ -35,7 +35,7 @@ export const useGame = () => {
   const { socket, createSocketConnection, deleteSocketConnection } =
     useSocket();
   const { boardState, setBoardState } = useBoard();
-  const { setPossibleMoves } = useTiles();
+  const { setPossibleMoves, selectPiece } = useTiles();
 
   const startNewGame = () => {
     createSocketConnection();
@@ -43,6 +43,32 @@ export const useGame = () => {
 
   const endGame = () => {
     deleteSocketConnection();
+  };
+
+  const selectSquare = (id: string, selected: boolean) => {
+    if (boardState.selectedPiece == id) {
+      selected = false;
+      setBoardState("selectedPiece", null);
+      setPossibleMoves([]);
+      return;
+    }
+
+    if (boardState.selectedPiece && boardState.selectedPiece != id) {
+      if (selected) {
+        setBoardState("from", boardState.selectedPiece);
+        setBoardState("to", id);
+        setBoardState("selectedPiece", null);
+        setPossibleMoves([]);
+        return;
+      }
+    }
+    selectPiece(id, boardState, (square: string | null) => {
+      if (boardState.selectedPiece == square) {
+        setBoardState("selectedPiece", null);
+        return;
+      }
+      setBoardState("selectedPiece", square);
+    });
   };
 
   useEffect(() => {
@@ -87,7 +113,7 @@ export const useGame = () => {
     };
 
     const handlePosMoves = (data: { moves: [string] }) => {
-      console.log(data);
+      // console.log(data);
       const moves = data.moves.map((move) => {
         if (move === "O-O") return boardState.playingAS === "w" ? "g1" : "g8";
         if (move === "O-O-O") return boardState.playingAS === "w" ? "c1" : "c8";
@@ -136,22 +162,12 @@ export const useGame = () => {
     if (boardState.from && boardState.to) {
       //  console.log("this runs");
       // console.log("from:", boardState.from, " to:", boardState.to);
-      socket.emit(
-        "make-move",
-        {
-          from: boardState.from,
-          to: boardState.to,
-          roomId: boardState.roomId,
-          playerId: boardState.playingId,
-        },
-        () => {
-          console.log("this runs");
-          setPossibleMoves([]);
-          setBoardState("to", null);
-          setBoardState("from", null);
-          setBoardState("selectedPiece", null);
-        }
-      );
+      socket.emit("make-move", {
+        from: boardState.from,
+        to: boardState.to,
+        roomId: boardState.roomId,
+        playerId: boardState.playingId,
+      });
 
       // console.log("this runs");
     }
@@ -180,5 +196,5 @@ export const useGame = () => {
     setBoardState,
     setPossibleMoves,
   ]);
-  return { startNewGame, endGame };
+  return { startNewGame, endGame, selectSquare };
 };
