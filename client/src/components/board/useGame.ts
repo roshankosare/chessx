@@ -87,11 +87,18 @@ export const useGame = () => {
     };
 
     const handlePosMoves = (data: { moves: [string] }) => {
+      console.log(data);
       const moves = data.moves.map((move) => {
         if (move === "O-O") return boardState.playingAS === "w" ? "g1" : "g8";
         if (move === "O-O-O") return boardState.playingAS === "w" ? "c1" : "c8";
-        return move.length <= 4 ? move.slice(-2) : move.slice(0, -1).slice(-2);
+        return move.length <= 4
+          ? move[move.length - 1] == "+"
+            ? move.slice(0, -1).slice(-2)
+            : move.slice(-2)
+          : move.slice(0, -1).slice(-2);
       });
+      console.log(moves);
+      moves.push(boardState.selectedPiece || "");
       setPossibleMoves(moves);
     };
 
@@ -138,6 +145,7 @@ export const useGame = () => {
           playerId: boardState.playingId,
         },
         () => {
+          console.log("this runs");
           setPossibleMoves([]);
           setBoardState("to", null);
           setBoardState("from", null);

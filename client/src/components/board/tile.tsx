@@ -68,6 +68,7 @@ const Tile: React.FC<TileProps> = ({ color, piece, id, selected }) => {
             : "none",
       }}
       onClick={() => {
+        console.log("this runs");
         if (boardState.selectedPiece == id) {
           selected = false;
           setBoardState("selectedPiece", null);
@@ -79,6 +80,9 @@ const Tile: React.FC<TileProps> = ({ color, piece, id, selected }) => {
           if (selected) {
             setBoardState("from", boardState.selectedPiece);
             setBoardState("to", id);
+            setBoardState("selectedPiece", null);
+            setPossibleMoves([]);
+            return;
           }
         }
         selectPiece(id, boardState, (square: string | null) => {
@@ -86,7 +90,6 @@ const Tile: React.FC<TileProps> = ({ color, piece, id, selected }) => {
             setBoardState("selectedPiece", null);
             return;
           }
-
           setBoardState("selectedPiece", square);
         });
       }}
