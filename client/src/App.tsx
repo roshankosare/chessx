@@ -1,12 +1,14 @@
-import {useState } from "react";
+import { useState } from "react";
 import "./App.css";
 import { Button } from "./components/ui/button";
 import Board from "./components/board/board";
 import { useBoard } from "./components/board/useBoard";
 import { useGame } from "./components/board/useGame";
+import SelectTime from "./components/board/selectTime";
 
 function App() {
   const [start, setStart] = useState<boolean>(false);
+  const [time, setTime] = useState<number>(5);
   const { boardState } = useBoard();
   const { startNewGame, endGame } = useGame();
 
@@ -48,7 +50,7 @@ function App() {
         ) : (
           <>
             <Button
-              className="text-lg font-bold"
+              className="text-md font-bold"
               onClick={() => {
                 setStart(true);
                 startNewGame();
@@ -56,6 +58,12 @@ function App() {
             >
               Play Bot
             </Button>
+            <SelectTime
+              time={time}
+              setTime={(time: number) => {
+                setTime(time);
+              }}
+            />{" "}
             {/* <Button className="text-lg font-bold">Play Random</Button> */}
           </>
         )}

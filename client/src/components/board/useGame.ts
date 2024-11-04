@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useSocket } from "./useSocket";
 import { BoardPos, BoardPosElement, PieceColor, PieceType } from "@/types";
 import { hasKeyOfType } from "@/lib/utils";
@@ -71,48 +71,70 @@ export const useGame = () => {
     });
   };
 
-  useEffect(() => {
-    const handleConnected = (data: { socket: string }) => {
+  const handleConnected = useCallback(
+    (data: { socket: string }) => {
       if (hasKeyOfType<{ socketId: string }>(data, "socketId", "string")) {
         setBoardState("playingId", data.socketId);
         socket?.emit("join-room", { id: data.socketId });
       }
-    };
-    const handleWaiting = (data: { roomId: string }) => {
+    },
+    [socket, setBoardState]
+  );
+
+  const handleWaiting = useCallback(
+    (data: { roomId: string }) => {
       if (hasKeyOfType<{ roomId: string }>(data, "roomId", "string"))
         setBoardState("roomId", data.roomId);
       setBoardState("waiting", true);
       setBoardState("gameStarted", false);
-    };
+    },
+    [setBoardState]
+  );
 
-    const handleRoomJoind = (data: { roomId: string }) => {
+  const handleRoomJoind = useCallback(
+    (data: { roomId: string }) => {
       if (hasKeyOfType<{ roomId: string }>(data, "roomId", "string"))
         setBoardState("roomId", data.roomId);
       setBoardState("gameStarted", false);
       setBoardState("waiting", true);
-    };
+    },
+    [setBoardState]
+  );
 
-    const handleGameStarted = () => {
-      setBoardState("waiting", false);
-      setBoardState("gameStarted", true);
-      if (!boardState.playingAS)
-        socket?.emit("get-game-info", {
-          roomId: boardState.roomId,
-          playerId: boardState.playingId,
-        });
-    };
+  const handleGameStarted = useCallback(() => {
+    setBoardState("waiting", false);
+    setBoardState("gameStarted", true);
+    if (!boardState.playingAS)
+      socket?.emit("get-game-info", {
+        roomId: boardState.roomId,
+        playerId: boardState.playingId,
+      });
+  }, [
+    boardState.playingAS,
+    boardState.playingId,
+    setBoardState,
+    boardState.roomId,
+    socket,
+  ]);
 
-    const handleGameInfo = (data: { playingAs: string }) => {
+  const handleGameInfo = useCallback(
+    (data: { playingAs: string }) => {
       setBoardState("playingAS", data.playingAs == "w" ? "w" : "b");
-    };
+    },
+    [setBoardState]
+  );
 
-    const handleGamePos = (data: { gameState: [] }) => {
+  const handleGamePos = useCallback(
+    (data: { gameState: [] }) => {
       const pos: BoardPos | null = getBoardPosition(data);
       // console.log(data);
       if (pos) setBoardState("boardPos", pos);
-    };
+    },
+    [setBoardState]
+  );
 
-    const handlePosMoves = (data: { moves: [string] }) => {
+  const handlePosMoves = useCallback(
+    (data: { moves: [string] }) => {
       // console.log(data);
       const moves = data.moves.map((move) => {
         if (move === "O-O") return boardState.playingAS === "w" ? "g1" : "g8";
@@ -123,17 +145,19 @@ export const useGame = () => {
             : move.slice(-2)
           : move.slice(0, -1).slice(-2);
       });
-      console.log(moves);
       moves.push(boardState.selectedPiece || "");
       setPossibleMoves(moves);
-    };
+    },
+    [boardState.playingAS, boardState.selectedPiece, setPossibleMoves]
+  );
 
-    const handleRefreshGame = () => {
-      socket?.emit("get-game-pos", {
-        roomId: boardState.roomId,
-        playerId: boardState.playingId,
-      });
-    };
+  const handleRefreshGame = useCallback(() => {
+    socket?.emit("get-game-pos", {
+      roomId: boardState.roomId,
+      playerId: boardState.playingId,
+    });
+  }, [boardState.roomId, boardState.playingId, socket]);
+  useEffect(() => {
     if (!socket) return;
     socket.on("connected", handleConnected);
     socket.on("waiting", handleWaiting);
@@ -185,16 +209,23 @@ export const useGame = () => {
       socket.off("refresh-game-status");
     };
   }, [
-    socket,
     boardState.from,
     boardState.to,
     boardState.gameStarted,
-    boardState.roomId,
     boardState.playingId,
-    boardState.playingAS,
+    boardState.roomId,
     boardState.selectedPiece,
+    socket,
     setBoardState,
     setPossibleMoves,
+    handleRoomJoind,
+    handleWaiting,
+    handleConnected,
+    handleGameStarted,
+    handleGamePos,
+    handleGameInfo,
+    handleRefreshGame,
+    handlePosMoves,
   ]);
   return { startNewGame, endGame, selectSquare };
 };
