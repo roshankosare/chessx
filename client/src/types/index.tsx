@@ -36,6 +36,11 @@ export type BoardPos = FixedLengthArray<BoardPosElement | null, 64>;
 
 export type ChessBoard = FixedLengthArray<TileInterface, 64>;
 
+export type PlayerInfo = {
+  username: string | null;
+  remainingTime: number | null;
+  avatar: string | null;
+};
 export type BoardStateKey =
   | "waiting"
   | "gameStarted"
@@ -45,6 +50,8 @@ export type BoardStateKey =
   | "playingAS"
   | "selectedPiece"
   | "from"
+  | "user"
+  | "oponent"
   | "to";
 
 export type BoardStateValue = {
@@ -56,6 +63,8 @@ export type BoardStateValue = {
   playingAS: PlayingAS | null;
   selectedPiece: string | null;
   from: string | null;
+  user: PlayerInfo | null;
+  oponent: PlayerInfo | null;
   to: string | null;
 }[BoardStateKey]; // This maps the BoardStateKey to its specific type
 
@@ -68,5 +77,7 @@ export interface BoardState {
   playingAS: PlayingAS | null;
   selectedPiece: string | null;
   from: string | null;
+  user: PlayerInfo ;
+  oponent: PlayerInfo;
   to: string | null;
 }

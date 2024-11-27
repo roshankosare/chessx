@@ -5,14 +5,14 @@ import { hasKeyOfType } from "@/lib/utils";
 import { useBoard } from "./useBoard";
 import { useTiles } from "./useTiles";
 
-const getBoardPosition = (data: {
+const getBoardPosition = (
   gameState: Array<
     Array<{ square: string; type: PieceType; color: PieceColor }>
-  >;
-}): BoardPos | null => {
+  >
+): BoardPos | null => {
   const pos: Array<BoardPosElement | null> = [];
 
-  data.gameState.forEach((r) => {
+  gameState.forEach((r) => {
     r.forEach((c) => {
       if (c) {
         pos.push({
@@ -118,7 +118,22 @@ export const useGame = () => {
   ]);
 
   const handleGameInfo = useCallback(
-    (data: { playingAs: string }) => {
+    (data: {
+      user: { username: string; remainingTime: number };
+      oponent: { username: string; remainingTime: number };
+      playingAs: string;
+    }) => {
+      //fetch username here
+      setBoardState("user", {
+        username: "me",
+        remainingTime: data.user.remainingTime,
+        avatar: "",
+      });
+      setBoardState("oponent", {
+        username: "user",
+        remainingTime: data.oponent.remainingTime,
+        avatar: "",
+      });
       setBoardState("playingAS", data.playingAs == "w" ? "w" : "b");
     },
     [setBoardState]
@@ -126,7 +141,9 @@ export const useGame = () => {
 
   const handleGamePos = useCallback(
     (data: { gameState: [] }) => {
-      const pos: BoardPos | null = getBoardPosition(data);
+      // console.log(data);
+      const pos: BoardPos | null = getBoardPosition(data.gameState);
+
       // console.log(data);
       if (pos) setBoardState("boardPos", pos);
     },
@@ -151,6 +168,32 @@ export const useGame = () => {
     [boardState.playingAS, boardState.selectedPiece, setPossibleMoves]
   );
 
+  const handleClockUpdate = useCallback(
+    (data: { whiteRemainigTime: number; blackRemainigTime: number }) => {
+      if (boardState.playingAS === "w") {
+        setBoardState("user", (value) => ({
+          ...value,
+          remainingTime: data.whiteRemainigTime,
+        }));
+        setBoardState("oponent", (value) => ({
+          ...value,
+          remainingTime: data.blackRemainigTime,
+        }));
+      }
+
+      if (boardState.playingAS === "b") {
+        setBoardState("user", (value) => ({
+          ...value,
+          remainingTime: data.blackRemainigTime,
+        }));
+        setBoardState("oponent", (value) => ({
+          ...value,
+          remainingTime: data.whiteRemainigTime,
+        }));
+      }
+    },
+    [boardState.playingAS, setBoardState]
+  );
   const handleRefreshGame = useCallback(() => {
     socket?.emit("get-game-pos", {
       roomId: boardState.roomId,
@@ -167,6 +210,7 @@ export const useGame = () => {
     socket.on("game-pos", handleGamePos);
     socket.on("pos-moves", handlePosMoves);
     socket.on("refresh-game-status", handleRefreshGame);
+    socket.on("clock-update", handleClockUpdate);
 
     if (boardState.roomId && boardState.gameStarted) {
       socket.emit("get-game-pos", {
@@ -192,6 +236,8 @@ export const useGame = () => {
         roomId: boardState.roomId,
         playerId: boardState.playingId,
       });
+      setBoardState("to", null);
+      setBoardState("from", null);
 
       // console.log("this runs");
     }

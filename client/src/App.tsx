@@ -18,9 +18,31 @@ function App() {
   // console.log(boardState.selectedPiece);
 
   return (
-    <div className=" h-auto px-5 py-5 flex flex-col gap-y-5 w-full sm:max-w-[800px] ">
+    <div className=" h-auto px-5 py-5 flex flex-col gap-y-5 w-full sm:max-w-[600px] bg-slate-300 ">
       {boardState.gameStarted ? (
-        <Board size={500}></Board>
+        <div className="m-full h-full ">
+          <div className=" w-full h-12 flex justify-between items-center">
+            <div className="font-bold">{boardState.oponent.username}</div>
+            <div className="font-bold">
+              {boardState.oponent.remainingTime &&
+                Math.floor(boardState.oponent.remainingTime / (60 * 1000))}{" "}
+              :
+              {boardState.oponent.remainingTime &&
+                (boardState.oponent.remainingTime % (60 * 1000)) / 1000}
+            </div>
+          </div>
+          <Board size={500}></Board>
+          <div className="m-full h-12 flex justify-between items-center">
+            <div className="font-bold">{boardState.user.username}</div>
+            <div className="font-bold">
+              {boardState.user.remainingTime &&
+                Math.floor(boardState.user.remainingTime / (60 * 1000))}{" "}
+              :
+              {boardState.user.remainingTime &&
+                (boardState.user.remainingTime % (60 * 1000)) / 1000}
+            </div>
+          </div>
+        </div>
       ) : (
         // <></>
         <div className="w-[500px] h-[500px] mx-auto my-auto relative">

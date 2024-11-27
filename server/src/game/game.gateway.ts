@@ -44,7 +44,21 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
           playerId: data.id,
         });
         if (this.gameManagerService.isGameReadyToStart(roomId)) {
-          return this.io.to(roomId).emit('game-started');
+          this.io.to(roomId).emit('game-started');
+          const intervalId = setInterval(() => {
+            const room = this.gameManagerService.getGameInfo(roomId);
+            this.io.to(roomId).emit('clock-update', {
+              whiteRemainigTime: room.playerWhiteRemainingTime,
+              blackRemainigTime: room.playerBlackRemainingTime,
+            });
+            if (room.playerWhiteRemainingTime <= 0) {
+              clearInterval(intervalId);
+            }
+            if (room.playerBlackRemainingTime <= 0) {
+              clearInterval(intervalId);
+            }
+          }, 1000);
+          return;
         }
         return client.emit('waiting', { roomId: roomId, playerId: data.id });
       }
@@ -66,11 +80,27 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
       if (room.playerWhite === data.playerId)
         client.emit('game-info', {
+          user: {
+            username: 'user',
+            remainingTime: room.playerWhiteRemainingTime,
+          },
+          oponent: {
+            username: 'oponent',
+            remainingTime: room.playerBlackRemainingTime,
+          },
           playingAs: 'w',
         });
 
       if (room.playerBlack === data.playerId)
         client.emit('game-info', {
+          user: {
+            username: 'user',
+            remainingTime: room.playerBlackRemainingTime,
+          },
+          oponent: {
+            username: 'oponent',
+            remainingTime: room.playerWhiteRemainingTime,
+          },
           playingAs: 'b',
         });
     } catch (error) {

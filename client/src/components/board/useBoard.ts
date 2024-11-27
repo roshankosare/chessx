@@ -5,7 +5,7 @@ export const useBoard = create<{
   boardState: BoardState;
   setBoardState: <K extends BoardStateKey>(
     key: K,
-    value: BoardState[K]
+    value: BoardState[K] | ((prevValue: BoardState[K]) => BoardState[K])
   ) => void;
 }>((set) => ({
   boardState: {
@@ -16,15 +16,19 @@ export const useBoard = create<{
     boardPos: null,
     playingAS: null,
     selectedPiece: null,
-    from:null,
-    to:null
+    from: null,
+    user: { username: null, avatar: null, remainingTime: null },
+    oponent: { username: null, avatar: null, remainingTime: null },
+    to: null,
   },
 
   setBoardState: (key, value) =>
     set((state) => ({
       boardState: {
-        ...state.boardState, // Correctly spreading the existing boardState
-        [key]: value, // Updating the specific key
+        ...state.boardState,
+        [key]: typeof value === "function"
+          ? (value as (prevValue: BoardState[typeof key]) => BoardState[typeof key])(state.boardState[key])
+          : value,
       },
     })),
 }));
