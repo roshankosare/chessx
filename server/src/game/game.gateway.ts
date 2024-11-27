@@ -45,8 +45,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         });
         if (this.gameManagerService.isGameReadyToStart(roomId)) {
           this.io.to(roomId).emit('game-started');
+          this.gameManagerService.startWhiteTime(roomId);
           const intervalId = setInterval(() => {
             const room = this.gameManagerService.getGameInfo(roomId);
+
             this.io.to(roomId).emit('clock-update', {
               whiteRemainigTime: room.playerWhiteRemainingTime,
               blackRemainigTime: room.playerBlackRemainingTime,
