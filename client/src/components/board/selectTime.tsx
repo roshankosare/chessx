@@ -18,7 +18,7 @@ const SelectTime: React.FC<SelectTimeProps> = ({ time, setTime }) => {
     <div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button className=" font-bold">{time} min</Button>
+          <Button className=" font-bold" >{time} min</Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuLabel>Game time</DropdownMenuLabel>

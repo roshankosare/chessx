@@ -272,6 +272,7 @@ export const useGame = () => {
     handleGameInfo,
     handleRefreshGame,
     handlePosMoves,
+    handleClockUpdate
   ]);
   return { startNewGame, endGame, selectSquare };
 };
