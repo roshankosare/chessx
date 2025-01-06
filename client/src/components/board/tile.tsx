@@ -59,10 +59,10 @@ const Tile: React.FC<TileProps> = ({ color, piece, id, selected }) => {
   return (
     <div
       style={{
-        background: isHovered || selected ? "#38b2ac" : color,
+        background:  color,
         boxShadow:
           isHovered || selected
-            ? "inset 0 0 12px 4px rgba(0, 0, 0, 0.6)"
+            ? "inset 0 0 16px 16px rgba(0, 0, 0, 0.6)"
             : "none",
       }}
       onClick={() => selectSquare(id, selected)}

@@ -152,7 +152,7 @@ export const useGame = () => {
 
   const handlePosMoves = useCallback(
     (data: { moves: [string] }) => {
-      // console.log(data);
+      console.log(data);
       const moves = data.moves.map((move) => {
         if (move === "O-O") return boardState.playingAS === "w" ? "g1" : "g8";
         if (move === "O-O-O") return boardState.playingAS === "w" ? "c1" : "c8";
@@ -200,6 +200,43 @@ export const useGame = () => {
       playerId: boardState.playingId,
     });
   }, [boardState.roomId, boardState.playingId, socket]);
+
+  const handleGameOver = useCallback(() => {
+    socket?.emit("get-game-over-info", {
+      roomId: boardState.roomId,
+      playerId: boardState.playingId,
+    });
+  }, [socket, boardState.playingId, boardState.roomId]);
+
+  const handleGameOverInfo = useCallback(
+    (data: {
+      wins: "b" | "w" | "d" | "s";
+      method: "checkmate" | "timeout";
+    }) => {
+      setTimeout(() => {
+        setBoardState(
+          "gameStatus",
+          data.wins === "b"
+            ? "blackWins"
+            : data.wins === "w"
+            ? "whiteWins"
+            : data.wins === "d"
+            ? "draw"
+            : data.wins === "s"
+            ? "stalemate"
+            : "stalemate"
+        );
+        deleteSocketConnection();
+
+        setBoardState(
+          "wonBy",
+          data.method === "checkmate" ? "checkmate" : "timeout"
+        );
+      }, 1000);
+    },
+    [setBoardState, socket]
+  );
+
   useEffect(() => {
     if (!socket) return;
     socket.on("connected", handleConnected);
@@ -211,6 +248,8 @@ export const useGame = () => {
     socket.on("pos-moves", handlePosMoves);
     socket.on("refresh-game-status", handleRefreshGame);
     socket.on("clock-update", handleClockUpdate);
+    socket.on("game-over", handleGameOver);
+    socket.on("game-over-info", handleGameOverInfo);
 
     if (boardState.roomId && boardState.gameStarted) {
       socket.emit("get-game-pos", {
@@ -272,7 +311,9 @@ export const useGame = () => {
     handleGameInfo,
     handleRefreshGame,
     handlePosMoves,
-    handleClockUpdate
+    handleClockUpdate,
+    handleGameOver,
+    handleGameOverInfo,
   ]);
   return { startNewGame, endGame, selectSquare };
 };

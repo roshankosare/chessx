@@ -1,7 +1,7 @@
 import { Chess } from 'chess.js';
 
-export type GameTime = 3 | 5 | 10;
-export type RoomStatus = 'available' | 'running' | 'full';
+export type GameTime = 1|3 | 5 | 10;
+export type RoomStatus = 'available' | 'running' | 'full' | 'gameover';
 export interface Room {
   roomId: string;
   status: RoomStatus;
@@ -11,6 +11,9 @@ export interface Room {
   turn: 'w' | 'b';
   playerWhiteRemainingTime: number;
   playerBlackRemainingTime: number | null;
+  gameResult: 'w' | 'b' | 'd' | 's' | null;
+  gameResultCause: 'timeout' | 'checkmate' | 'draw' | 'stealmate' | null;
+
   game: Chess;
 }
 

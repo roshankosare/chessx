@@ -41,6 +41,16 @@ export type PlayerInfo = {
   remainingTime: number | null;
   avatar: string | null;
 };
+
+export type GameStatus =
+  | "running"
+  | "blackWins"
+  | "whiteWins"
+  | "draw"
+  | "stalemate"
+  | "ready";
+
+export type WonBy = "checkmate" | "timeout";
 export type BoardStateKey =
   | "waiting"
   | "gameStarted"
@@ -52,7 +62,9 @@ export type BoardStateKey =
   | "from"
   | "user"
   | "oponent"
-  | "to";
+  | "to"
+  | "gameStatus"
+  | "wonBy";
 
 export type BoardStateValue = {
   waiting: boolean;
@@ -66,6 +78,8 @@ export type BoardStateValue = {
   user: PlayerInfo | null;
   oponent: PlayerInfo | null;
   to: string | null;
+  gameStatus: GameStatus;
+  wonBy: WonBy | null;
 }[BoardStateKey]; // This maps the BoardStateKey to its specific type
 
 export interface BoardState {
@@ -77,7 +91,9 @@ export interface BoardState {
   playingAS: PlayingAS | null;
   selectedPiece: string | null;
   from: string | null;
-  user: PlayerInfo ;
+  user: PlayerInfo;
   oponent: PlayerInfo;
   to: string | null;
+  gameStatus: GameStatus;
+  wonBy: WonBy | null;
 }

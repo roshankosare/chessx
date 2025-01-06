@@ -9,6 +9,11 @@ type PlayerInfoProps = {
   remainingTime?: number;
 };
 
+const formatter = new Intl.NumberFormat('en-US', {
+  minimumIntegerDigits: 2,
+  useGrouping: false
+});
+
 const PlayerInfo: React.FC<PlayerInfoProps> = ({
   type,
   playingAS,
@@ -37,7 +42,7 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({
         <Clock className="w-5 h-5 my-auto" />
         <p className="font-bold text-lg"></p>
         {remainingTime && Math.floor(remainingTime / (60 * 1000))} :
-        {remainingTime && (remainingTime % (60 * 1000)) / 1000}
+        {remainingTime && formatter.format((remainingTime % (60 * 1000)) / 1000)}
       </div>
     </div>
   );

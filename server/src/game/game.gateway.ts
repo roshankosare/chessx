@@ -36,7 +36,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
   ) {
     try {
-      const roomId = this.gameManagerService.joinRoom(data.id, 5);
+      const roomId = this.gameManagerService.joinRoom(data.id, 1);
       if (roomId) {
         client.join(roomId);
         client.emit('room-joined', {
@@ -54,9 +54,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
               blackRemainigTime: room.playerBlackRemainingTime,
             });
             if (room.playerWhiteRemainingTime <= 0) {
+              this.gameManagerService.setGameOverInfo(roomId);
+              this.io.to(roomId).emit('game-over');
               clearInterval(intervalId);
             }
             if (room.playerBlackRemainingTime <= 0) {
+              this.gameManagerService.setGameOverInfo(roomId);
+              this.io.to(roomId).emit('game-over');
               clearInterval(intervalId);
             }
           }, 1000);
@@ -169,12 +173,42 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return;
       }
 
-      this.gameManagerService.makeMove(
+      const result = this.gameManagerService.makeMove(
         { from: data.from, to: data.to },
         data.playerId,
         data.roomId,
       );
+
       this.io.to(data.roomId).emit('refresh-game-status');
+      if (result === 'gameover') {
+        this.io.to(data.roomId).emit('game-over');
+      }
+      return;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  @SubscribeMessage('get-game-over-info')
+  handleGameOverInfo(
+    @MessageBody() data: { square: string; roomId: string; playerId: string },
+  ) {
+    try {
+      const room = this.gameManagerService.getGameInfo(data.roomId);
+      if (!room) {
+        return;
+      }
+
+      this.io.to(data.roomId).emit('game-over-info', {
+        wins:
+          room.gameResult === 'b'
+            ? 'b'
+            : room.gameResult === 'w'
+              ? 'w'
+              : room.gameResult === 'd'
+                ? 'd'
+                : 's',
+        method: room.gameResultCause,
+      });
       return;
     } catch (error) {
       console.log(error);

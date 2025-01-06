@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import { Button } from "./components/ui/button";
 import Board from "./components/board/board";
@@ -6,12 +6,20 @@ import { useBoard } from "./components/board/useBoard";
 import { useGame } from "./components/board/useGame";
 import SelectTime from "./components/board/selectTime";
 import PlayerInfo from "./components/board/playerInfo";
+import GameOver from "./components/board/gameOver";
 
 function App() {
   const [start, setStart] = useState<boolean>(false);
   const [time, setTime] = useState<number>(5);
-  const { boardState } = useBoard();
+  const [openGameOverWindow, setOpenGameOverWindow] = useState<boolean>(false);
+  const { boardState, resetBoardState } = useBoard();
   const { startNewGame, endGame } = useGame();
+
+  useEffect(() => {
+    if (boardState.gameStatus !== "ready") {
+      setOpenGameOverWindow(true);
+    }
+  }, [boardState.gameStatus]);
 
   // Establish the connection with the socket server
 
@@ -24,14 +32,14 @@ function App() {
         {boardState.gameStarted ? (
           <div className="w-full h-full flex flex-col gap-y-2">
             <PlayerInfo
-            type="o"
+              type="o"
               username={boardState.oponent.username || undefined}
               remainingTime={boardState.oponent.remainingTime || undefined}
               playingAS={boardState.playingAS || undefined}
             />
             <Board size={500}></Board>
             <PlayerInfo
-            type="p"
+              type="p"
               username={boardState.user.username || undefined}
               remainingTime={boardState.user.remainingTime || undefined}
               playingAS={boardState.playingAS || undefined}
@@ -85,6 +93,27 @@ function App() {
           )}
         </div>
       </div>
+      <GameOver
+        openGameOverWindow={openGameOverWindow}
+        playerWon={
+          boardState.gameStatus === "whiteWins" && boardState.playingAS === "w"
+            ? "you won"
+            : boardState.gameStatus === "blackWins" &&
+              boardState.playingAS === "b"
+            ? "you won"
+            : boardState.gameStatus === "draw"
+            ? "draw"
+            : boardState.gameStatus === "stalemate"
+            ? "stalemate"
+            : "opponent won"
+        }
+        message={boardState.wonBy || ""}
+        onOpenChange={() => {
+          setOpenGameOverWindow(false);
+          resetBoardState();
+          setStart(false);
+        }}
+      />
     </div>
   );
 }

@@ -42,6 +42,8 @@ export class GameManagerService {
     | 'turn'
     | 'playerBlackRemainingTime'
     | 'playerWhiteRemainingTime'
+    | 'gameResult'
+    | 'gameResultCause'
   > | null {
     const data = this.roomManagerService.findRoom({ roomId: roomId });
     if (data)
@@ -51,6 +53,8 @@ export class GameManagerService {
         turn: data.turn,
         playerBlackRemainingTime: data.playerBlackRemainingTime,
         playerWhiteRemainingTime: data.playerWhiteRemainingTime,
+        gameResult:data.gameResult,
+        gameResultCause:data.gameResultCause
       };
     return null;
   }
@@ -131,7 +135,13 @@ export class GameManagerService {
 
     const intervalId = setInterval(() => {
       room.playerBlackRemainingTime = room.playerBlackRemainingTime - 1000;
-
+      if (room.playerBlackRemainingTime < 0 || room.status === 'gameover') {
+        room.status = 'gameover';
+        room.gameResult = 'w';
+        room.gameResultCause = 'timeout';
+        clearInterval(intervalId);
+        return;
+      }
       if (room.turn === 'w') {
         clearInterval(intervalId);
       }
@@ -148,33 +158,90 @@ export class GameManagerService {
     const intervalId = setInterval(() => {
       room.playerWhiteRemainingTime = room.playerWhiteRemainingTime - 1000;
 
+      if (room.playerWhiteRemainingTime < 0 || room.status === 'gameover') {
+        room.status = 'gameover';
+        room.gameResult = 'b';
+        room.gameResultCause = 'timeout';
+        clearInterval(intervalId);
+        return;
+      }
       if (room.turn === 'b') {
         clearInterval(intervalId);
       }
     }, 1000);
   }
 
-  makeMove(move: { from: string; to: string }, player: string, roomId: string) {
+  makeMove(
+    move: { from: string; to: string },
+    player: string,
+    roomId: string,
+  ): 'gameover' | 'next' {
     try {
       const room = this.roomManagerService.findRoom({ roomId: roomId });
 
       if (!room) {
-        return;
+        throw new Error('invalid room Id');
       }
       if (room.playerWhite === player && room.turn === 'w') {
         room.game.move({ from: move.from, to: move.to });
+        if (room.game.isGameOver()) {
+          this.setGameOverInfo(roomId);
+          return 'gameover';
+        }
         room.turn = 'b';
         this.startBlackTime(room.roomId);
-        return;
+        return 'next';
       }
       if (room.playerBlack === player && room.turn === 'b') {
         room.game.move({ from: move.from, to: move.to });
+
+        if (room.game.isGameOver()) {
+          this.setGameOverInfo(roomId);
+          return 'gameover';
+        }
         room.turn = 'w';
         this.startWhiteTime(room.roomId);
-        return;
+        return 'next';
       }
     } catch (error) {
       console.log(error);
+      throw new Error('invalid move');
+    }
+  }
+
+  setGameOverInfo(roomId: string) {
+    const room = this.roomManagerService.findRoom({ roomId: roomId });
+
+    if (!room) {
+      return 'invalidroom';
+    }
+
+    if (
+      room.playerBlackRemainingTime <= 0 ||
+      room.playerWhiteRemainingTime <= 0
+    ) {
+      room.gameResult = room.playerBlackRemainingTime <= 0 ? 'w' : 'b';
+      room.gameResultCause = 'timeout';
+      return;
+    }
+
+    if (room.game.isDraw()) {
+      room.gameResult = 'd';
+      room.gameResultCause = 'draw';
+      return 'draw';
+    }
+    if (room.game.isStalemate()) {
+      room.gameResult = 's';
+      room.gameResultCause = 'stealmate';
+      return 'stalemate';
+    }
+    if (room.game.isGameOver()) {
+      if (room.game.isCheckmate()) {
+        const playerWin = room.game.turn();
+        room.gameResult = playerWin === 'w' ? 'b' : 'w';
+        room.gameResultCause = 'checkmate';
+        return;
+      }
     }
   }
 

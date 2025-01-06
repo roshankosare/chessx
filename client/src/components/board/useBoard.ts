@@ -7,6 +7,7 @@ export const useBoard = create<{
     key: K,
     value: BoardState[K] | ((prevValue: BoardState[K]) => BoardState[K])
   ) => void;
+  resetBoardState: () => void;
 }>((set) => ({
   boardState: {
     waiting: false,
@@ -20,15 +21,40 @@ export const useBoard = create<{
     user: { username: null, avatar: null, remainingTime: null },
     oponent: { username: null, avatar: null, remainingTime: null },
     to: null,
+    gameStatus: "ready",
+    wonBy: null,
   },
 
   setBoardState: (key, value) =>
     set((state) => ({
       boardState: {
         ...state.boardState,
-        [key]: typeof value === "function"
-          ? (value as (prevValue: BoardState[typeof key]) => BoardState[typeof key])(state.boardState[key])
-          : value,
+        [key]:
+          typeof value === "function"
+            ? (
+                value as (
+                  prevValue: BoardState[typeof key]
+                ) => BoardState[typeof key]
+              )(state.boardState[key])
+            : value,
       },
     })),
+  resetBoardState: () =>
+    set({
+      boardState: {
+        waiting: false,
+        gameStarted: false,
+        playingId: null,
+        roomId: null,
+        boardPos: null,
+        playingAS: null,
+        selectedPiece: null,
+        from: null,
+        user: { username: null, avatar: null, remainingTime: null },
+        oponent: { username: null, avatar: null, remainingTime: null },
+        to: null,
+        gameStatus: "ready",
+        wonBy: null,
+      },
+    }),
 }));
