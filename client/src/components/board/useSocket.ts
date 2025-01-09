@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
 const SOCKET_SERVER_URL = "http://localhost:5000";
@@ -6,19 +6,19 @@ export const useSocket = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   // crete socket io connection for
-  const createSocketConnection = () => {
+  const createSocketConnectionRef = useRef(() => {
     const server: Socket = io(SOCKET_SERVER_URL);
     if (server) {
       setSocket(server);
     }
-  };
+  });
 
-  const deleteSocketConnection = () => {
+  const deleteSocketConnectionRef = useRef(() => {
     if (socket) {
       socket.disconnect();
       setSocket(null);
     }
-  };
+  });
 
   useEffect(() => {
     return () => {
@@ -28,9 +28,10 @@ export const useSocket = () => {
       }
     };
   }, [socket]);
+
   return {
     socket,
-    createSocketConnection,
-    deleteSocketConnection,
+    createSocketConnection:createSocketConnectionRef.current,
+    deleteSocketConnection:deleteSocketConnectionRef.current,
   };
 };

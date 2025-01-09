@@ -44,6 +44,9 @@ export const useGame = () => {
   const endGame = () => {
     deleteSocketConnection();
   };
+  const endSocketConnection = useCallback(() => {
+    deleteSocketConnection();
+  }, [deleteSocketConnection]);
 
   const selectSquare = (id: string, selected: boolean) => {
     if (boardState.selectedPiece == id) {
@@ -226,15 +229,15 @@ export const useGame = () => {
             ? "stalemate"
             : "stalemate"
         );
-        deleteSocketConnection();
+        endSocketConnection();
 
         setBoardState(
           "wonBy",
           data.method === "checkmate" ? "checkmate" : "timeout"
         );
-      }, 1000);
+      }, 500);
     },
-    [setBoardState, socket]
+    [setBoardState]
   );
 
   useEffect(() => {
