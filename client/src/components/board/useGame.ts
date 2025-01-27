@@ -216,6 +216,7 @@ export const useGame = () => {
       wins: "b" | "w" | "d" | "s";
       method: "checkmate" | "timeout";
     }) => {
+      
       setTimeout(() => {
         setBoardState(
           "gameStatus",
@@ -295,6 +296,9 @@ export const useGame = () => {
       socket.off("game-pos");
       socket.off("pos-moves");
       socket.off("refresh-game-status");
+      socket.off("clock-update");
+      socket.off("game-over");
+      socket.off("game-over-info");
     };
   }, [
     boardState.from,

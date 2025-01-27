@@ -37,7 +37,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
   ) {
     try {
-      const roomId = this.gameManagerService.joinRoom(data.id, data.time as GameTime);
+      console.log(data.time);
+      const roomId = this.gameManagerService.joinRoom(
+        data.id,
+        data.time as GameTime,
+      );
       if (roomId) {
         client.join(roomId);
         client.emit('room-joined', {

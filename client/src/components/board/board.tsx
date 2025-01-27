@@ -10,11 +10,12 @@ interface BoardProps {
 }
 
 const Board: React.FC<BoardProps> = ({ size }) => {
-  const width = size;
-  const hight = size;
+  const width = size > 500 ? 500 : size;
+  const height = size > 500 ? 500 : size;
 
   const { tiles, setTiles, reverseTiles } = useTiles();
   const { boardState } = useBoard();
+
   useEffect(() => {
     if (boardState.boardPos) setTiles(boardState.boardPos);
   }, [boardState.boardPos, setTiles]);
@@ -29,8 +30,8 @@ const Board: React.FC<BoardProps> = ({ size }) => {
     <div
       className="grid grid-cols-8 grid-rows-8 bg-amber-950 mx-auto my-auto rounded-md border-4 border-gray-800 p-4 gap-0"
       style={{
-        width: width,
-        height: hight,
+        width: width, // 100% width on mobile
+        height: height, // 100% height on mobile
       }}
     >
       {tiles.map((t) => (

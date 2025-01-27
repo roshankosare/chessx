@@ -21,13 +21,13 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({
   remainingTime,
 }) => {
   return (
-    <div className=" w-full h-12 flex justify-between items-center">
-      <div className="w-auto px-4 py-2 flex gap-x-2 ">
-        <img src="/user-icon.jpg" className="w-10 h-10" />
-        <div className="my-auto text-lg">{username}</div>
+    <div className=" w-full h-12 flex justify-between items-center px-2">
+      <div className="w-auto px-4 py-2 flex gap-x-2 text-center ">
+        <img src="/user-icon.jpg" className="s w-8 h-8 sm:w-10 sm:h-10 my-auto" />
+        <div className="my-auto  text-sm font-bold sm:text-lg ">{username}</div>
       </div>
       <div
-        className={`font-bold px-4 py-2 w-28 rounded-md flex justify-between  ${
+        className={`font-bold  text-sm sm:text-md px-4 py-2 sm:py-3  w-24 sm:w-28 rounded-md flex justify-between  ${
           type === "p"
             ? playingAS === "w"
               ? "bg-white text-black"
@@ -46,6 +46,7 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({
       </div>
     </div>
   );
+  
 };
 
 export default PlayerInfo;
