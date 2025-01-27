@@ -18,6 +18,7 @@ export type BoardPosElement = {
   square: string;
   piece: Piece | null;
 };
+export type GameTime = 1 | 3 | 5 | 10;
 
 export type FixedLengthArray<T, N extends number> = N extends N
   ? number extends N
@@ -52,6 +53,7 @@ export type GameStatus =
 
 export type WonBy = "checkmate" | "timeout";
 export type BoardStateKey =
+  | "gameTime"
   | "waiting"
   | "gameStarted"
   | "playingId"
@@ -67,6 +69,7 @@ export type BoardStateKey =
   | "wonBy";
 
 export type BoardStateValue = {
+  gameTime:GameTime;
   waiting: boolean;
   gameStarted: boolean;
   playingId: string | null;
@@ -83,6 +86,7 @@ export type BoardStateValue = {
 }[BoardStateKey]; // This maps the BoardStateKey to its specific type
 
 export interface BoardState {
+  gameTime:GameTime;
   waiting: boolean;
   gameStarted: boolean;
   playingId: string | null;

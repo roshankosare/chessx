@@ -23,6 +23,7 @@ const SelectTime: React.FC<SelectTimeProps> = ({ time, setTime }) => {
         <DropdownMenuContent>
           <DropdownMenuLabel>Game time</DropdownMenuLabel>
           <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={()=>setTime(3)}>1 min</DropdownMenuItem>
           <DropdownMenuItem onClick={()=>setTime(3)}>3 min</DropdownMenuItem>
           <DropdownMenuItem onClick={()=>setTime(5)}>5 min</DropdownMenuItem>
           <DropdownMenuItem onClick={()=>setTime(10)}>10 min</DropdownMenuItem>

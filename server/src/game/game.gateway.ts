@@ -10,6 +10,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { GameManagerService } from './gameManager/gameManager.service';
 import { Square } from 'chess.js';
+import { GameTime } from './roomManager/room.interface';
 
 @WebSocketGateway({
   cors: {
@@ -32,11 +33,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('join-room')
   handleJoinRoom(
-    @MessageBody() data: { id: string },
+    @MessageBody() data: { id: string; time: number },
     @ConnectedSocket() client: Socket,
   ) {
     try {
-      const roomId = this.gameManagerService.joinRoom(data.id, 1);
+      const roomId = this.gameManagerService.joinRoom(data.id, data.time as GameTime);
       if (roomId) {
         client.join(roomId);
         client.emit('room-joined', {

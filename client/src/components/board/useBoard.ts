@@ -10,6 +10,7 @@ export const useBoard = create<{
   resetBoardState: () => void;
 }>((set) => ({
   boardState: {
+    gameTime: 3,
     waiting: false,
     gameStarted: false,
     playingId: null,
@@ -40,8 +41,9 @@ export const useBoard = create<{
       },
     })),
   resetBoardState: () =>
-    set({
+    set((state) => ({
       boardState: {
+        gameTime: state.boardState.gameTime,
         waiting: false,
         gameStarted: false,
         playingId: null,
@@ -56,5 +58,5 @@ export const useBoard = create<{
         gameStatus: "ready",
         wonBy: null,
       },
-    }),
+    })),
 }));

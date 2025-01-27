@@ -44,9 +44,6 @@ export const useGame = () => {
   const endGame = () => {
     deleteSocketConnection();
   };
-  const endSocketConnection = useCallback(() => {
-    deleteSocketConnection();
-  }, [deleteSocketConnection]);
 
   const selectSquare = (id: string, selected: boolean) => {
     if (boardState.selectedPiece == id) {
@@ -78,10 +75,13 @@ export const useGame = () => {
     (data: { socket: string }) => {
       if (hasKeyOfType<{ socketId: string }>(data, "socketId", "string")) {
         setBoardState("playingId", data.socketId);
-        socket?.emit("join-room", { id: data.socketId });
+        socket?.emit("join-room", {
+          id: data.socketId,
+          time: boardState.gameTime,
+        });
       }
     },
-    [socket, setBoardState]
+    [socket, setBoardState, boardState.gameTime]
   );
 
   const handleWaiting = useCallback(
@@ -229,7 +229,7 @@ export const useGame = () => {
             ? "stalemate"
             : "stalemate"
         );
-        endSocketConnection();
+        deleteSocketConnection();
 
         setBoardState(
           "wonBy",
@@ -237,7 +237,7 @@ export const useGame = () => {
         );
       }, 500);
     },
-    [setBoardState]
+    [setBoardState, deleteSocketConnection]
   );
 
   useEffect(() => {
