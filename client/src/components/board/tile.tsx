@@ -1,13 +1,13 @@
 import { Piece } from "@/types";
 import React, { useState } from "react";
 
-import { useGame } from "./useGame";
 
 export interface TileProps {
   color: string;
   piece: Piece | null;
   id: string;
   selected: boolean;
+  selectSquare: (id: string, square: boolean) => void;
 }
 
 const getPieceImage = (value: string): string => {
@@ -52,14 +52,19 @@ const getPieceImage = (value: string): string => {
 
   return "";
 };
-const Tile: React.FC<TileProps> = ({ color, piece, id, selected }) => {
+const Tile: React.FC<TileProps> = ({
+  color,
+  piece,
+  id,
+  selected,
+  selectSquare,
+}) => {
   const [isHovered, setIsHovered] = useState(false);
-  const { selectSquare } = useGame();
 
   return (
     <div
       style={{
-        background:  color,
+        background: color,
         boxShadow:
           isHovered || selected
             ? "inset 0 0 16px 16px rgba(0, 0, 0, 0.6)"

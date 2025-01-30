@@ -12,16 +12,27 @@ import { GameTime } from "./types";
 function App() {
   const [start, setStart] = useState<boolean>(false);
   const [openGameOverWindow, setOpenGameOverWindow] = useState<boolean>(false);
-  const { boardState, resetBoardState, setBoardState } = useBoard();
+
   const { startNewGame, endGame } = useGame();
   const containerRef = useRef<HTMLDivElement>(null);
   const [boardSize, setBoardSize] = useState<number>(500);
 
+  const setBoardState = useBoard((state) => state.setBoardState);
+  const resetBoardState = useBoard((state) => state.resetBoardState);
+  const oponent = useBoard((state) => state.boardState.oponent);
+  const user = useBoard((state) => state.boardState.user);
+  const gameStatus = useBoard((state) => state.boardState.gameStatus);
+  const gameStarted = useBoard((state) => state.boardState.gameStarted);
+  const wonBy = useBoard((state) => state.boardState.wonBy);
+  const waiting = useBoard((state) => state.boardState.waiting);
+  const playingAs = useBoard((state) => state.boardState.playingAS);
+  const gameTime = useBoard((state) => state.boardState.gameTime);
+
   useEffect(() => {
-    if (boardState.gameStatus !== "ready") {
+    if (gameStatus !== "ready") {
       setOpenGameOverWindow(true);
     }
-  }, [boardState.gameStatus]);
+  }, [gameStatus]);
   useEffect(() => {
     const container = containerRef.current; // Capture the ref value in a variable
 
@@ -55,26 +66,26 @@ function App() {
         ref={containerRef}
         className=" w-full sm:max-w-[800px] mx-auto bg-neutral-800 sm:px-10  text-white flex flex-col gap-y-5 py-5 rounded-lg shadow-lg"
       >
-        {boardState.gameStarted ? (
+        {gameStarted ? (
           <div className="w-full h-full flex flex-col gap-y-2">
             <PlayerInfo
               type="o"
-              username={boardState.oponent.username || undefined}
-              remainingTime={boardState.oponent.remainingTime || undefined}
-              playingAS={boardState.playingAS || undefined}
+              username={oponent.username || undefined}
+              remainingTime={oponent.remainingTime || undefined}
+              playingAS={playingAs || undefined}
             />
             <Board size={boardSize}></Board>
             <PlayerInfo
               type="p"
-              username={boardState.user.username || undefined}
-              remainingTime={boardState.user.remainingTime || undefined}
-              playingAS={boardState.playingAS || undefined}
+              username={user.username || undefined}
+              remainingTime={user.remainingTime || undefined}
+              playingAS={playingAs || undefined}
             />
           </div>
         ) : (
           // <></>
           <div className=" w-full h-auto sm:w-[500px] sm:h-[500px] mx-auto my-auto relative">
-            {boardState.waiting && !boardState.gameStarted && (
+            {waiting && !gameStarted && (
               <div className="absolute inset-0 flex justify-center items-center">
                 <div className="w-20 h-20 border-8 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
               </div>
@@ -109,7 +120,7 @@ function App() {
                 Play Bot
               </Button>
               <SelectTime
-                time={boardState.gameTime}
+                time={gameTime}
                 setTime={(time: number) => {
                   setBoardState("gameTime", time as GameTime);
                 }}
@@ -122,18 +133,17 @@ function App() {
       <GameOver
         openGameOverWindow={openGameOverWindow}
         playerWon={
-          boardState.gameStatus === "whiteWins" && boardState.playingAS === "w"
+          gameStatus === "whiteWins" && playingAs === "w"
             ? "you won"
-            : boardState.gameStatus === "blackWins" &&
-              boardState.playingAS === "b"
+            : gameStatus === "blackWins" && playingAs === "b"
             ? "you won"
-            : boardState.gameStatus === "draw"
+            : gameStatus === "draw"
             ? "draw"
-            : boardState.gameStatus === "stalemate"
+            : gameStatus === "stalemate"
             ? "stalemate"
             : "opponent won"
         }
-        message={boardState.wonBy || ""}
+        message={wonBy || ""}
         onOpenChange={() => {
           setOpenGameOverWindow(false);
           resetBoardState();

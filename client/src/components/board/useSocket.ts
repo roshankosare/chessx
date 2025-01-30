@@ -1,37 +1,27 @@
-import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
+import { create } from "zustand";
 
 const SOCKET_SERVER_URL = "http://localhost:5000";
-export const useSocket = () => {
-  const [socket, setSocket] = useState<Socket | null>(null);
 
-  // crete socket io connection for
-  const createSocketConnectionRef = useRef(() => {
-    const server: Socket = io(SOCKET_SERVER_URL);
-    if (server) {
-      setSocket(server);
+export const useSocket = create<{
+  socket: Socket | null;
+  createSocketConnection: () => void;
+  deleteSocketConnection: () => void;
+}>((set, get) => ({
+  socket: null,
+
+  createSocketConnection: () => {
+    if (!get().socket) {
+      const server: Socket = io(SOCKET_SERVER_URL);
+      set(() => ({ socket: server })); // Function inside set prevents unnecessary re-renders
     }
-  });
+  },
 
-  const deleteSocketConnectionRef = useRef(() => {
+  deleteSocketConnection: () => {
+    const socket = get().socket;
     if (socket) {
       socket.disconnect();
-      setSocket(null);
+      set(() => ({ socket: null })); // Function inside set prevents unnecessary re-renders
     }
-  });
-
-  useEffect(() => {
-    return () => {
-      if (socket) {
-        socket.disconnect();
-        setSocket(null);
-      }
-    };
-  }, [socket]);
-
-  return {
-    socket,
-    createSocketConnection:createSocketConnectionRef.current,
-    deleteSocketConnection:deleteSocketConnectionRef.current,
-  };
-};
+  },
+}));

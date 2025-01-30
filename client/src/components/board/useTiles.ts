@@ -1,11 +1,11 @@
-import { BoardPos, BoardState, ChessBoard } from "@/types";
+import { BoardPos, ChessBoard, PlayingAS } from "@/types";
 import { create } from "zustand";
 
 interface TilesStore {
   tiles: ChessBoard;
   selectPiece: (
     id: string,
-    boardState: BoardState,
+    playingAs: PlayingAS | null,
     setCurrentPiece: (square: string | null) => void
   ) => void;
   setTiles: (boardPos: BoardPos) => void;
@@ -61,18 +61,18 @@ export const useTiles = create<TilesStore>((set) => ({
   }) as unknown as ChessBoard,
   selectPiece: (
     id: string,
-    boardState: BoardState,
+    playingAs: PlayingAS | null,
     setCurrentPiece: (square: string | null) => void
   ) =>
     set((state) => ({
       tiles: state.tiles.map((tile) => {
-        if (tile.id == id) {
+        if (tile.id == id && playingAs) {
           const t = {
             ...tile,
             selected: tile.piece
-              ? boardState.playingAS == "w" && tile.piece.color == "w"
+              ? playingAs == "w" && tile.piece.color == "w"
                 ? !tile.selected
-                : boardState.playingAS == "b" && tile.piece.color == "b"
+                : playingAs == "b" && tile.piece.color == "b"
                 ? !tile.selected
                 : false
               : false,

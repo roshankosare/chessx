@@ -8,6 +8,7 @@ export const useBoard = create<{
     value: BoardState[K] | ((prevValue: BoardState[K]) => BoardState[K])
   ) => void;
   resetBoardState: () => void;
+  setBoardStateValue: (values: Partial<BoardState>) => void;
 }>((set) => ({
   boardState: {
     gameTime: 3,
@@ -18,10 +19,9 @@ export const useBoard = create<{
     boardPos: null,
     playingAS: null,
     selectedPiece: null,
-    from: null,
     user: { username: null, avatar: null, remainingTime: null },
     oponent: { username: null, avatar: null, remainingTime: null },
-    to: null,
+    move: { from: null, to: null },
     gameStatus: "ready",
     wonBy: null,
   },
@@ -51,12 +51,18 @@ export const useBoard = create<{
         boardPos: null,
         playingAS: null,
         selectedPiece: null,
-        from: null,
         user: { username: null, avatar: null, remainingTime: null },
         oponent: { username: null, avatar: null, remainingTime: null },
-        to: null,
+        move: { from: null, to: null },
         gameStatus: "ready",
         wonBy: null,
+      },
+    })),
+  setBoardStateValue: (values: Partial<BoardState>) =>
+    set((state) => ({
+      boardState: {
+        ...state.boardState,
+        ...values,
       },
     })),
 }));

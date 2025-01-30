@@ -61,15 +61,14 @@ export type BoardStateKey =
   | "boardPos"
   | "playingAS"
   | "selectedPiece"
-  | "from"
   | "user"
   | "oponent"
-  | "to"
+  | "move"
   | "gameStatus"
   | "wonBy";
 
 export type BoardStateValue = {
-  gameTime:GameTime;
+  gameTime: GameTime;
   waiting: boolean;
   gameStarted: boolean;
   playingId: string | null;
@@ -77,16 +76,16 @@ export type BoardStateValue = {
   boardPos: BoardPos | null;
   playingAS: PlayingAS | null;
   selectedPiece: string | null;
-  from: string | null;
+
   user: PlayerInfo | null;
   oponent: PlayerInfo | null;
-  to: string | null;
+  move: { from: string | null; to: string | null };
   gameStatus: GameStatus;
   wonBy: WonBy | null;
 }[BoardStateKey]; // This maps the BoardStateKey to its specific type
 
 export interface BoardState {
-  gameTime:GameTime;
+  gameTime: GameTime;
   waiting: boolean;
   gameStarted: boolean;
   playingId: string | null;
@@ -94,10 +93,9 @@ export interface BoardState {
   boardPos: BoardPos | null;
   playingAS: PlayingAS | null;
   selectedPiece: string | null;
-  from: string | null;
   user: PlayerInfo;
   oponent: PlayerInfo;
-  to: string | null;
+  move: { from: string | null; to: string | null };
   gameStatus: GameStatus;
   wonBy: WonBy | null;
 }
