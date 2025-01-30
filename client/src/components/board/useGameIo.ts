@@ -117,15 +117,17 @@ export const useGameIo = () => {
       playingAs: string;
     }) => {
       setBoardStateValue({
-        user: {
-          username: "me",
-          remainingTime: data.user.remainingTime,
-          avatar: "",
-        },
-        oponent: {
-          username: "user",
-          remainingTime: data.oponent.remainingTime,
-          avatar: "",
+        playersInfo: {
+          user: {
+            username: "me",
+            remainingTime: data.user.remainingTime,
+            avatar: "",
+          },
+          opponent: {
+            username: "user",
+            remainingTime: data.oponent.remainingTime,
+            avatar: "",
+          },
         },
         playingAS: data.playingAs == "w" ? "w" : "b",
       });
@@ -162,32 +164,36 @@ export const useGameIo = () => {
     [playingAs, setPossibleMoves]
   );
 
-  // const handleClockUpdate = useCallback(
-  //   (data: { whiteRemainigTime: number; blackRemainigTime: number }) => {
-  //     if (boardState.playingAS === "w") {
-  //       setBoardState("user", (value) => ({
-  //         ...value,
-  //         remainingTime: data.whiteRemainigTime,
-  //       }));
-  //       setBoardState("oponent", (value) => ({
-  //         ...value,
-  //         remainingTime: data.blackRemainigTime,
-  //       }));
-  //     }
+  const handleClockUpdate = useCallback(
+    (data: { whiteRemainigTime: number; blackRemainigTime: number }) => {
+      if (playingAs === "w") {
+        setBoardState("playersInfo", (value) => ({
+          user: {
+            ...value.user,
+            remainingTime: data.whiteRemainigTime,
+          },
+          opponent: {
+            ...value.opponent,
+            remainingTime: data.blackRemainigTime,
+          },
+        }));
+      }
 
-  //     if (boardState.playingAS === "b") {
-  //       setBoardState("user", (value) => ({
-  //         ...value,
-  //         remainingTime: data.blackRemainigTime,
-  //       }));
-  //       setBoardState("oponent", (value) => ({
-  //         ...value,
-  //         remainingTime: data.whiteRemainigTime,
-  //       }));
-  //     }
-  //   },
-  //   [boardState.playingAS, setBoardState]
-  // );
+      if (playingAs === "b") {
+        setBoardState("playersInfo", (value) => ({
+          user: {
+            ...value.user,
+            remainingTime: data.blackRemainigTime,
+          },
+          opponent: {
+            ...value.opponent,
+            remainingTime: data.whiteRemainigTime,
+          },
+        }));
+      }
+    },
+    [playingAs, setBoardState]
+  );
   const handleRefreshGame = useCallback(() => {
     socket?.emit("get-game-pos", {
       roomId: roomId,
@@ -288,5 +294,6 @@ export const useGameIo = () => {
     handleRefreshGame,
     handlePosMoves,
     handleGamePos,
+    handleClockUpdate
   };
 };

@@ -1,29 +1,33 @@
 import { PlayingAS } from "@/types";
 import { Clock } from "lucide-react";
 import React from "react";
+import { useBoard } from "./useBoard";
 
 type PlayerInfoProps = {
   type: "p" | "o";
   playingAS?: PlayingAS;
   username?: string;
-  remainingTime?: number;
 };
 
-const formatter = new Intl.NumberFormat('en-US', {
+const formatter = new Intl.NumberFormat("en-US", {
   minimumIntegerDigits: 2,
-  useGrouping: false
+  useGrouping: false,
 });
 
 const PlayerInfo: React.FC<PlayerInfoProps> = ({
   type,
   playingAS,
   username,
-  remainingTime,
 }) => {
+  const user = useBoard((state) => state.boardState.playersInfo.user);
+  const opponent = useBoard((state) => state.boardState.playersInfo.opponent);
   return (
     <div className=" w-full h-12 flex justify-between items-center px-2">
       <div className="w-auto px-4 py-2 flex gap-x-2 text-center ">
-        <img src="/user-icon.jpg" className="s w-8 h-8 sm:w-10 sm:h-10 my-auto" />
+        <img
+          src="/user-icon.jpg"
+          className="s w-8 h-8 sm:w-10 sm:h-10 my-auto"
+        />
         <div className="my-auto  text-sm font-bold sm:text-lg ">{username}</div>
       </div>
       <div
@@ -41,12 +45,20 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({
       >
         <Clock className="w-5 h-5 my-auto" />
         <p className="font-bold text-lg"></p>
-        {remainingTime && Math.floor(remainingTime / (60 * 1000))} :
-        {remainingTime && formatter.format((remainingTime % (60 * 1000)) / 1000)}
+        {type === "o"
+          ? opponent.remainingTime &&
+            Math.floor(opponent.remainingTime / (60 * 1000))
+          : user.remainingTime &&
+            Math.floor(user.remainingTime / (60 * 1000))}{" "}
+        :
+        {type === "o"
+          ? opponent.remainingTime &&
+            formatter.format((opponent.remainingTime % (60 * 1000)) / 1000)
+          : user.remainingTime &&
+            formatter.format((user.remainingTime % (60 * 1000)) / 1000)}
       </div>
     </div>
   );
-  
 };
 
 export default PlayerInfo;

@@ -17,6 +17,7 @@ export const useGame = () => {
     handleRefreshGame,
     handleGameInfo,
     handlePosMoves,
+    handleClockUpdate,
   } = useGameIo();
 
   useEffect(() => {
@@ -29,7 +30,7 @@ export const useGame = () => {
     socket.on("game-pos", handleGamePos);
     socket.on("pos-moves", handlePosMoves);
     socket.on("refresh-game-status", handleRefreshGame);
-    // // socket.on("clock-update", handleClockUpdate);
+    socket.on("clock-update", handleClockUpdate);
     // socket.on("game-over", handleGameOver);
     // socket.on("game-over-info", handleGameOverInfo);
 
@@ -59,7 +60,7 @@ export const useGame = () => {
     handleGameInfo,
     handleRefreshGame,
     handlePosMoves,
-    // // handleClockUpdate,
+    handleClockUpdate,
     // handleGameOver,
     // handleGameOverInfo,
   ]);

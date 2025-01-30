@@ -61,8 +61,7 @@ export type BoardStateKey =
   | "boardPos"
   | "playingAS"
   | "selectedPiece"
-  | "user"
-  | "oponent"
+  |"playersInfo"
   | "move"
   | "gameStatus"
   | "wonBy";
@@ -76,9 +75,10 @@ export type BoardStateValue = {
   boardPos: BoardPos | null;
   playingAS: PlayingAS | null;
   selectedPiece: string | null;
-
-  user: PlayerInfo | null;
-  oponent: PlayerInfo | null;
+  playersInfo: {
+    user: PlayerInfo;
+    opponent: PlayerInfo;
+  };
   move: { from: string | null; to: string | null };
   gameStatus: GameStatus;
   wonBy: WonBy | null;
@@ -93,8 +93,10 @@ export interface BoardState {
   boardPos: BoardPos | null;
   playingAS: PlayingAS | null;
   selectedPiece: string | null;
-  user: PlayerInfo;
-  oponent: PlayerInfo;
+  playersInfo: {
+    user: PlayerInfo;
+    opponent: PlayerInfo;
+  };
   move: { from: string | null; to: string | null };
   gameStatus: GameStatus;
   wonBy: WonBy | null;

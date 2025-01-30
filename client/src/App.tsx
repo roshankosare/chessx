@@ -19,8 +19,12 @@ function App() {
 
   const setBoardState = useBoard((state) => state.setBoardState);
   const resetBoardState = useBoard((state) => state.resetBoardState);
-  const oponent = useBoard((state) => state.boardState.oponent);
-  const user = useBoard((state) => state.boardState.user);
+  const opponentUsername = useBoard(
+    (state) => state.boardState.playersInfo.opponent.username
+  );
+  const userUsername = useBoard(
+    (state) => state.boardState.playersInfo.user.username
+  );
   const gameStatus = useBoard((state) => state.boardState.gameStatus);
   const gameStarted = useBoard((state) => state.boardState.gameStarted);
   const wonBy = useBoard((state) => state.boardState.wonBy);
@@ -70,15 +74,13 @@ function App() {
           <div className="w-full h-full flex flex-col gap-y-2">
             <PlayerInfo
               type="o"
-              username={oponent.username || undefined}
-              remainingTime={oponent.remainingTime || undefined}
+              username={opponentUsername || undefined}
               playingAS={playingAs || undefined}
             />
             <Board size={boardSize}></Board>
             <PlayerInfo
               type="p"
-              username={user.username || undefined}
-              remainingTime={user.remainingTime || undefined}
+              username={userUsername || undefined}
               playingAS={playingAs || undefined}
             />
           </div>
