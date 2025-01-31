@@ -1,10 +1,11 @@
-import { Piece } from "@/types";
-import React, { useState } from "react";
-
+import React, { memo, useState } from "react";
 
 export interface TileProps {
   color: string;
-  piece: Piece | null;
+  piece: boolean;
+  pcolor: string | null;
+  ptype: string | null;
+
   id: string;
   selected: boolean;
   selectSquare: (id: string, square: boolean) => void;
@@ -52,45 +53,42 @@ const getPieceImage = (value: string): string => {
 
   return "";
 };
-const Tile: React.FC<TileProps> = ({
-  color,
-  piece,
-  id,
-  selected,
-  selectSquare,
-}) => {
-  const [isHovered, setIsHovered] = useState(false);
+const Tile: React.FC<TileProps> = memo(
+  ({ color, pcolor, ptype, piece, id, selected, selectSquare }) => {
+    console.log(`tile rerender with id ${id}`);
+    const [isHovered, setIsHovered] = useState(false);
 
-  return (
-    <div
-      style={{
-        background: color,
-        boxShadow:
-          isHovered || selected
-            ? "inset 0 0 16px 16px rgba(0, 0, 0, 0.6)"
-            : "none",
-      }}
-      onClick={() => selectSquare(id, selected)}
-      className={`flex justify-center items-center w-full h-full  transition-all 
-        hover:bg-teal-400 focus:bg-teal-400 `}
-      onMouseEnter={() => {
-        if (piece) {
-          setIsHovered(true);
-        }
-      }}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {piece && (
-        <img
-          className="w-auto  h-4/5 mx-auto my-auto"
-          src={getPieceImage(piece.color + piece.type)}
-          width={200}
-          height={200}
-          alt=""
-        />
-      )}
-    </div>
-  );
-};
+    return (
+      <div
+        onClick={() => selectSquare(id, selected)}
+        onMouseEnter={() => {
+          if (piece) {
+            setIsHovered(true);
+          }
+        }}
+        className={`flex justify-center items-center w-full h-full  transition-all
+            hover:bg-teal-400 focus:bg-teal-400 `}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{
+          background: color,
+          boxShadow:
+            isHovered || selected
+              ? "inset 0 0 16px 16px rgba(0, 0, 0, 0.6)"
+              : "none",
+        }}
+      >
+        {pcolor && ptype && (
+          <img
+            className="w-auto  h-4/5 mx-auto my-auto"
+            src={getPieceImage(pcolor + ptype)}
+            width={200}
+            height={200}
+            alt=""
+          />
+        )}
+      </div>
+    );
+  }
+);
 
 export default Tile;
