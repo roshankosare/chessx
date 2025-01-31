@@ -2,6 +2,7 @@ import { useCallback, useEffect } from "react";
 import Tile from "./tile";
 import { useBoard } from "./useBoard";
 import { useTiles } from "./useTiles";
+import { useSocket } from "./useSocket";
 
 const PlotTiles = () => {
   console.log("tiles rendered");
@@ -12,11 +13,14 @@ const PlotTiles = () => {
   const setBoardStateValue = useBoard((state) => state.setBoardStateValue);
   const boardPos = useBoard((state) => state.boardState.boardPos);
   const playingAs = useBoard((state) => state.boardState.playingAS);
+  const { socket } = useSocket();
 
   const selectSquare = useCallback(
     (id: string, selected: boolean) => {
+      const playingAs = getBoardStateValue("playingAS");
       const selectedPiece = getBoardStateValue("selectedPiece");
       if (selectedPiece == id) {
+        // if slected piece is selected again then unselect it
         selected = false;
         setBoardState("selectedPiece", null);
         setPossibleMoves([]);
@@ -24,6 +28,8 @@ const PlotTiles = () => {
       }
 
       if (selectedPiece && selectedPiece != id) {
+        // if peace is already selected and slected square is not square which has piece then
+        // execute move from piece square to selected square
         if (selected) {
           setBoardStateValue({
             move: {
@@ -32,7 +38,26 @@ const PlotTiles = () => {
             },
             selectedPiece: null,
           });
+
+          const move = getBoardStateValue("move");
+          if (move.from && move.to && socket) {
+            const roomId = getBoardStateValue("roomId");
+            const playingId = getBoardStateValue("playingId");
+            socket.emit("make-move", {
+              from: move.from,
+              to: move.to,
+              roomId: roomId,
+              playerId: playingId,
+            });
+            setBoardStateValue({
+              move: {
+                from: null,
+                to: null,
+              },
+            });
+          }
           setPossibleMoves([]);
+
           return;
         }
       }
@@ -43,10 +68,23 @@ const PlotTiles = () => {
         }
         setBoardState("selectedPiece", square);
       });
+
+      // select piece first then get possible moves of that piece
+      const roomId = getBoardStateValue("roomId");
+      const playingId = getBoardStateValue("playingId");
+      const selectedPieceNew = getBoardStateValue("selectedPiece");
+      if (socket) {
+        socket.emit("get-pos-moves", {
+          roomId: roomId,
+          playerId: playingId,
+          square: selectedPieceNew,
+        });
+      }
     },
     [
+      socket,
       getBoardStateValue,
-      playingAs,
+
       setBoardState,
       selectPiece,
       setPossibleMoves,

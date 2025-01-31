@@ -34,15 +34,12 @@ const getBoardPosition = (
 export const useGameIo = () => {
   const { socket, createSocketConnection, deleteSocketConnection } =
     useSocket();
-  const playingAs = useBoard((state) => state.boardState.playingAS);
-  const selectedPiece = useBoard((state) => state.boardState.selectedPiece);
+
   const setBoardState = useBoard((state) => state.setBoardState);
   const setBoardStateValue = useBoard((state) => state.setBoardStateValue);
-  const gameTime = useBoard((state) => state.boardState.gameTime);
-  const move = useBoard((state) => state.boardState.move);
-  const gameStarted = useBoard((state) => state.boardState.gameStarted);
-  const playingId = useBoard((state) => state.boardState.playingId);
+  const getBoardStateValue = useBoard((state) => state.getBoardStateValue);
   const roomId = useBoard((state) => state.boardState.roomId);
+  const gameStarted = useBoard((state) => state.boardState.gameStarted);
 
   const { setPossibleMoves } = useTiles();
 
@@ -56,6 +53,7 @@ export const useGameIo = () => {
 
   const handleConnected = useCallback(
     (data: { socket: string }) => {
+      const gameTime = getBoardStateValue("gameTime");
       if (hasKeyOfType<{ socketId: string }>(data, "socketId", "string")) {
         setBoardState("playingId", data.socketId);
         socket?.emit("join-room", {
@@ -64,7 +62,7 @@ export const useGameIo = () => {
         });
       }
     },
-    [socket, setBoardState, gameTime]
+    [socket, setBoardState, getBoardStateValue]
   );
 
   const handleWaiting = useCallback(
@@ -99,6 +97,9 @@ export const useGameIo = () => {
   );
 
   const handleGameStarted = useCallback(() => {
+    const playingAs = getBoardStateValue("playingAS");
+    const roomId = getBoardStateValue("roomId");
+    const playingId = getBoardStateValue("playingId");
     setBoardStateValue({
       waiting: false,
       gameStarted: true,
@@ -108,7 +109,7 @@ export const useGameIo = () => {
         roomId: roomId,
         playerId: playingId,
       });
-  }, [playingAs, playingId, roomId, socket, setBoardStateValue]);
+  }, [getBoardStateValue, socket, setBoardStateValue]);
 
   const handleGameInfo = useCallback(
     (data: {
@@ -148,6 +149,7 @@ export const useGameIo = () => {
 
   const handlePosMoves = useCallback(
     (data: { moves: [string] }) => {
+      const playingAs = getBoardStateValue("playingAS");
       // console.log(data);
       const moves = data.moves.map((move) => {
         if (move === "O-O") return playingAs === "w" ? "g1" : "g8";
@@ -161,11 +163,12 @@ export const useGameIo = () => {
 
       setPossibleMoves(moves);
     },
-    [playingAs, setPossibleMoves]
+    [getBoardStateValue, setPossibleMoves]
   );
 
   const handleClockUpdate = useCallback(
     (data: { whiteRemainigTime: number; blackRemainigTime: number }) => {
+      const playingAs = getBoardStateValue("playingAS");
       if (playingAs === "w") {
         setBoardState("playersInfo", (value) => ({
           user: {
@@ -192,14 +195,16 @@ export const useGameIo = () => {
         }));
       }
     },
-    [playingAs, setBoardState]
+    [getBoardStateValue, setBoardState]
   );
   const handleRefreshGame = useCallback(() => {
+    const roomId = getBoardStateValue("roomId");
+    const playingId = getBoardStateValue("playingId");
     socket?.emit("get-game-pos", {
       roomId: roomId,
       playerId: playingId,
     });
-  }, [roomId, playingId, socket]);
+  }, [getBoardStateValue, socket]);
 
   // const handleGameOver = useCallback(() => {
   //   socket?.emit("get-game-over-info", {
@@ -239,6 +244,7 @@ export const useGameIo = () => {
   // );
 
   useEffect(() => {
+    const playingId = getBoardStateValue("playingId");
     if (!socket) return;
 
     if (roomId && gameStarted) {
@@ -247,40 +253,13 @@ export const useGameIo = () => {
         playerId: playingId,
       });
     }
-    if (selectedPiece) {
-      socket.emit("get-pos-moves", {
-        roomId: roomId,
-        playerId: playingId,
-        square: selectedPiece,
-      });
-      // setBoardState("selectedPiece", null);
-    }
-
-    if (move.from && move.to) {
-      //  console.log("this runs");
-      // console.log("from:", boardState.from, " to:", boardState.to);
-      socket.emit("make-move", {
-        from: move.from,
-        to: move.to,
-        roomId: roomId,
-        playerId: playingId,
-      });
-      setBoardStateValue({
-        move: {
-          from: null,
-          to: null,
-        },
-      });
-    }
   }, [
-    move,
-    gameStarted,
-    playingId,
     roomId,
-    selectedPiece,
+    gameStarted,
     socket,
     setBoardState,
     setBoardStateValue,
+    getBoardStateValue,
   ]);
   return {
     socket,
@@ -294,6 +273,6 @@ export const useGameIo = () => {
     handleRefreshGame,
     handlePosMoves,
     handleGamePos,
-    handleClockUpdate
+    handleClockUpdate,
   };
 };
