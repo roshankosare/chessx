@@ -8,12 +8,14 @@ import SelectTime from "./components/board/selectTime";
 import PlayerInfo from "./components/board/playerInfo";
 import GameOver from "./components/board/gameOver";
 import { GameTime } from "./types";
+import ResignGame from "./components/board/resignGame";
 
 function App() {
   const [start, setStart] = useState<boolean>(false);
   const [openGameOverWindow, setOpenGameOverWindow] = useState<boolean>(false);
+  const [openResignGame, setOpenResignGame] = useState<boolean>(false);
 
-  const { startNewGame, endGame } = useGame();
+  const { startNewGame, resignGame } = useGame();
   const containerRef = useRef<HTMLDivElement>(null);
   const [boardSize, setBoardSize] = useState<number>(500);
 
@@ -86,7 +88,7 @@ function App() {
           </div>
         ) : (
           // <></>
-          <div className=" w-full h-auto sm:w-[500px] sm:h-[500px] mx-auto my-auto relative">
+          <div className=" w-full px-2  h-auto sm:w-[500px] sm:h-[500px] mx-auto my-auto relative">
             {waiting && !gameStarted && (
               <div className="absolute inset-0 flex justify-center items-center">
                 <div className="w-20 h-20 border-8 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
@@ -104,11 +106,12 @@ function App() {
             <Button
               className="text-lg font-bold"
               onClick={() => {
-                setStart(false);
-                endGame();
+                setOpenResignGame(true);
+                // setStart(false);
+                // endGame();
               }}
             >
-              Exit
+              Resign
             </Button>
           ) : (
             <>
@@ -119,7 +122,7 @@ function App() {
                   startNewGame();
                 }}
               >
-                Play Bot
+                Play Random
               </Button>
               <SelectTime
                 time={gameTime}
@@ -132,18 +135,28 @@ function App() {
           )}
         </div>
       </div>
+      <ResignGame
+        open={openResignGame}
+        onOpenChange={() => {
+          setOpenResignGame(false);
+        }}
+        resignGame={() => {
+          resignGame();
+          setOpenResignGame(false);
+        }}
+      />
       <GameOver
         openGameOverWindow={openGameOverWindow}
         playerWon={
-          gameStatus === "whiteWins" && playingAs === "w"
-            ? "you won"
-            : gameStatus === "blackWins" && playingAs === "b"
-            ? "you won"
+          gameStatus === "whiteWins"
+            ? "White Win"
+            : gameStatus === "blackWins"
+            ? "Black win"
             : gameStatus === "draw"
-            ? "draw"
+            ? "Draw"
             : gameStatus === "stalemate"
-            ? "stalemate"
-            : "opponent won"
+            ? "Stalemate"
+            : "Draw"
         }
         message={wonBy || ""}
         onOpenChange={() => {

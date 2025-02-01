@@ -1,6 +1,6 @@
 import { Chess } from 'chess.js';
 
-export type GameTime = 1|3 | 5 | 10;
+export type GameTime = 1 | 3 | 5 | 10;
 export type RoomStatus = 'available' | 'running' | 'full' | 'gameover';
 export interface Room {
   roomId: string;
@@ -12,7 +12,13 @@ export interface Room {
   playerWhiteRemainingTime: number;
   playerBlackRemainingTime: number | null;
   gameResult: 'w' | 'b' | 'd' | 's' | null;
-  gameResultCause: 'timeout' | 'checkmate' | 'draw' | 'stealmate' | null;
+  gameResultCause:
+    | 'timeout'
+    | 'checkmate'
+    | 'draw'
+    | 'stealmate'
+    | 'resignation'
+    | null;
 
   game: Chess;
 }

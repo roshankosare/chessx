@@ -51,7 +51,7 @@ export type GameStatus =
   | "stalemate"
   | "ready";
 
-export type WonBy = "checkmate" | "timeout";
+export type WonBy = "checkmate" | "timeout" | "resignation";
 export type BoardStateKey =
   | "gameTime"
   | "waiting"
@@ -61,7 +61,7 @@ export type BoardStateKey =
   | "boardPos"
   | "playingAS"
   | "selectedPiece"
-  |"playersInfo"
+  | "playersInfo"
   | "move"
   | "gameStatus"
   | "wonBy";

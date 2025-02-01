@@ -53,8 +53,8 @@ export class GameManagerService {
         turn: data.turn,
         playerBlackRemainingTime: data.playerBlackRemainingTime,
         playerWhiteRemainingTime: data.playerWhiteRemainingTime,
-        gameResult:data.gameResult,
-        gameResultCause:data.gameResultCause
+        gameResult: data.gameResult,
+        gameResultCause: data.gameResultCause,
       };
     return null;
   }
@@ -207,6 +207,23 @@ export class GameManagerService {
       console.log(error);
       throw new Error('invalid move');
     }
+  }
+
+  resignGame(roomId: string, playerId: string): boolean {
+    const room = this.roomManagerService.findRoom({ roomId: roomId });
+
+    if (!room) {
+      return false;
+    }
+    let playerResigned: typeof room.gameResult =
+      playerId === room.playerBlack ? 'w' : null;
+    if (!playerResigned) {
+      playerResigned = playerId === room.playerWhite ? 'b' : null;
+    }
+    if (playerResigned) {
+      room.gameResult = playerResigned;
+    }
+    room.gameResultCause = 'resignation';
   }
 
   setGameOverInfo(roomId: string) {

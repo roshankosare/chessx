@@ -55,7 +55,7 @@ const getPieceImage = (value: string): string => {
 };
 const Tile: React.FC<TileProps> = memo(
   ({ color, pcolor, ptype, piece, id, selected, selectSquare }) => {
-    console.log(`tile rerender with id ${id}`);
+    // console.log(`tile rerender with id ${id}`);
     const [isHovered, setIsHovered] = useState(false);
 
     return (

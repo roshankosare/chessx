@@ -193,6 +193,27 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.log(error);
     }
   }
+
+  @SubscribeMessage('resign-game')
+  handleResignGame(@MessageBody() data: { roomId: string; playerId: string }) {
+    const roomId = data.roomId;
+    const playerId = data.playerId;
+    if (!roomId || !playerId) {
+      return;
+    }
+    try {
+      const room = this.gameManagerService.getGameInfo(data.roomId);
+      if (!room) {
+        return;
+      }
+
+      this.gameManagerService.resignGame(roomId, playerId);
+      this.io.to(roomId).emit('game-over');
+      return;
+    } catch (error) {
+      console.log(error);
+    }
+  }
   @SubscribeMessage('get-game-over-info')
   handleGameOverInfo(
     @MessageBody() data: { square: string; roomId: string; playerId: string },

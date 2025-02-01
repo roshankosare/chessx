@@ -8,7 +8,7 @@ export const useGame = () => {
   const {
     socket,
     startNewGame,
-    endGame,
+    resignGame,
     handleConnected,
     handleRoomJoind,
     handleWaiting,
@@ -18,6 +18,8 @@ export const useGame = () => {
     handleGameInfo,
     handlePosMoves,
     handleClockUpdate,
+    handleGameOver,
+    handleGameOverInfo,
   } = useGameIo();
 
   useEffect(() => {
@@ -31,8 +33,8 @@ export const useGame = () => {
     socket.on("pos-moves", handlePosMoves);
     socket.on("refresh-game-status", handleRefreshGame);
     socket.on("clock-update", handleClockUpdate);
-    // socket.on("game-over", handleGameOver);
-    // socket.on("game-over-info", handleGameOverInfo);
+    socket.on("game-over", handleGameOver);
+    socket.on("game-over-info", handleGameOverInfo);
 
     return () => {
       // deleteSocketConnection();
@@ -61,8 +63,8 @@ export const useGame = () => {
     handleRefreshGame,
     handlePosMoves,
     handleClockUpdate,
-    // handleGameOver,
-    // handleGameOverInfo,
+    handleGameOver,
+    handleGameOverInfo,
   ]);
-  return { startNewGame, endGame };
+  return { startNewGame, resignGame };
 };

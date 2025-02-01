@@ -47,9 +47,16 @@ export const useGameIo = () => {
     createSocketConnection();
   };
 
-  const endGame = () => {
-    deleteSocketConnection();
-  };
+  const resignGame = useCallback(() => {
+    if (!socket) return;
+
+    const roomId = getBoardStateValue("roomId");
+    const playingId = getBoardStateValue("playingId");
+    socket.emit("resign-game", {
+      roomId: roomId,
+      playerId: playingId,
+    });
+  }, [socket, getBoardStateValue]);
 
   const handleConnected = useCallback(
     (data: { socket: string }) => {
@@ -206,42 +213,44 @@ export const useGameIo = () => {
     });
   }, [getBoardStateValue, socket]);
 
-  // const handleGameOver = useCallback(() => {
-  //   socket?.emit("get-game-over-info", {
-  //     roomId: boardState.roomId,
-  //     playerId: boardState.playingId,
-  //   });
-  // }, [socket, boardState.playingId, boardState.roomId]);
+  const handleGameOver = useCallback(() => {
+    const roomId = getBoardStateValue("roomId");
+    const playingId = getBoardStateValue("playingId");
+    socket?.emit("get-game-over-info", {
+      roomId: roomId,
+      playerId: playingId,
+    });
+  }, [socket, getBoardStateValue]);
 
-  // const handleGameOverInfo = useCallback(
-  //   (data: {
-  //     wins: "b" | "w" | "d" | "s";
-  //     method: "checkmate" | "timeout";
-  //   }) => {
-
-  //     setTimeout(() => {
-  //       setBoardState(
-  //         "gameStatus",
-  //         data.wins === "b"
-  //           ? "blackWins"
-  //           : data.wins === "w"
-  //           ? "whiteWins"
-  //           : data.wins === "d"
-  //           ? "draw"
-  //           : data.wins === "s"
-  //           ? "stalemate"
-  //           : "stalemate"
-  //       );
-  //       deleteSocketConnection();
-
-  //       setBoardState(
-  //         "wonBy",
-  //         data.method === "checkmate" ? "checkmate" : "timeout"
-  //       );
-  //     }, 500);
-  //   },
-  //   [setBoardState, deleteSocketConnection]
-  // );
+  const handleGameOverInfo = useCallback(
+    (data: {
+      wins: "b" | "w" | "d" | "s";
+      method: "checkmate" | "timeout" | "resignation";
+    }) => {
+      setTimeout(() => {
+        setBoardStateValue({
+          gameStatus:
+            data.wins === "b"
+              ? "blackWins"
+              : data.wins === "w"
+              ? "whiteWins"
+              : data.wins === "d"
+              ? "draw"
+              : data.wins === "s"
+              ? "stalemate"
+              : "stalemate",
+          wonBy:
+            data.method === "checkmate"
+              ? "checkmate"
+              : data.method === "resignation"
+              ? "resignation"
+              : "timeout",
+        });
+        deleteSocketConnection();
+      }, 500);
+    },
+    [setBoardStateValue, deleteSocketConnection]
+  );
 
   useEffect(() => {
     const playingId = getBoardStateValue("playingId");
@@ -264,7 +273,7 @@ export const useGameIo = () => {
   return {
     socket,
     startNewGame,
-    endGame,
+    resignGame,
     handleConnected,
     handleRoomJoind,
     handleGameInfo,
@@ -274,5 +283,7 @@ export const useGameIo = () => {
     handlePosMoves,
     handleGamePos,
     handleClockUpdate,
+    handleGameOver,
+    handleGameOverInfo,
   };
 };

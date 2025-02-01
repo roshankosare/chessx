@@ -5,7 +5,6 @@ import { useTiles } from "./useTiles";
 import { useSocket } from "./useSocket";
 
 const PlotTiles = () => {
-  console.log("tiles rendered");
   const { tiles, setTiles, reverseTiles, setPossibleMoves, selectPiece } =
     useTiles();
   const getBoardStateValue = useBoard((state) => state.getBoardStateValue);
@@ -84,7 +83,6 @@ const PlotTiles = () => {
     [
       socket,
       getBoardStateValue,
-
       setBoardState,
       selectPiece,
       setPossibleMoves,
