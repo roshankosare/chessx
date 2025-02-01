@@ -1,12 +1,12 @@
 import { useEffect } from "react";
-
 import { useGameIo } from "./useGameIo";
+import { useSocket } from "./useSocket";
 import { useRenderCount } from "./useRenderCount";
 
 export const useGame = () => {
-  useRenderCount();
+  const { socket } = useSocket();
+  useRenderCount()
   const {
-    socket,
     startNewGame,
     resignGame,
     handleConnected,
@@ -53,7 +53,6 @@ export const useGame = () => {
     };
   }, [
     socket,
-    // setPossibleMoves,
     handleRoomJoind,
     handleWaiting,
     handleConnected,
@@ -66,5 +65,6 @@ export const useGame = () => {
     handleGameOver,
     handleGameOverInfo,
   ]);
+
   return { startNewGame, resignGame };
 };

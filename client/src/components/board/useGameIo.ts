@@ -32,7 +32,7 @@ const getBoardPosition = (
 };
 
 export const useGameIo = () => {
-  const { socket, createSocketConnection, deleteSocketConnection } =
+  const { getSocketValue, createSocketConnection, deleteSocketConnection } =
     useSocket();
 
   const setBoardState = useBoard((state) => state.setBoardState);
@@ -41,13 +41,14 @@ export const useGameIo = () => {
   const roomId = useBoard((state) => state.boardState.roomId);
   const gameStarted = useBoard((state) => state.boardState.gameStarted);
 
-  const { setPossibleMoves } = useTiles();
+  const { setPossibleMoves, setTiles } = useTiles();
 
-  const startNewGame = () => {
+  const startNewGame = useCallback(() => {
     createSocketConnection();
-  };
+  }, [createSocketConnection]);
 
   const resignGame = useCallback(() => {
+    const socket = getSocketValue();
     if (!socket) return;
 
     const roomId = getBoardStateValue("roomId");
@@ -56,20 +57,23 @@ export const useGameIo = () => {
       roomId: roomId,
       playerId: playingId,
     });
-  }, [socket, getBoardStateValue]);
+  }, [getSocketValue, getBoardStateValue]);
 
   const handleConnected = useCallback(
-    (data: { socket: string }) => {
+    (data: { socketId: string }) => {
       const gameTime = getBoardStateValue("gameTime");
       if (hasKeyOfType<{ socketId: string }>(data, "socketId", "string")) {
         setBoardState("playingId", data.socketId);
-        socket?.emit("join-room", {
+        const socket = getSocketValue();
+        if (!socket) return;
+
+        socket.emit("join-room", {
           id: data.socketId,
           time: gameTime,
         });
       }
     },
-    [socket, setBoardState, getBoardStateValue]
+    [getSocketValue, setBoardState, getBoardStateValue]
   );
 
   const handleWaiting = useCallback(
@@ -107,16 +111,18 @@ export const useGameIo = () => {
     const playingAs = getBoardStateValue("playingAS");
     const roomId = getBoardStateValue("roomId");
     const playingId = getBoardStateValue("playingId");
+    const socket = getSocketValue();
+    if (!socket) return;
     setBoardStateValue({
       waiting: false,
       gameStarted: true,
     });
     if (!playingAs)
-      socket?.emit("get-game-info", {
+      socket.emit("get-game-info", {
         roomId: roomId,
         playerId: playingId,
       });
-  }, [getBoardStateValue, socket, setBoardStateValue]);
+  }, [getBoardStateValue, getSocketValue, setBoardStateValue]);
 
   const handleGameInfo = useCallback(
     (data: {
@@ -149,9 +155,9 @@ export const useGameIo = () => {
       const pos: BoardPos | null = getBoardPosition(data.gameState);
 
       // console.log(data);
-      if (pos) setBoardState("boardPos", pos);
+      if (pos) setTiles(pos);
     },
-    [setBoardState]
+    [setTiles]
   );
 
   const handlePosMoves = useCallback(
@@ -205,22 +211,27 @@ export const useGameIo = () => {
     [getBoardStateValue, setBoardState]
   );
   const handleRefreshGame = useCallback(() => {
+    const socket = getSocketValue();
+    if (!socket) return;
     const roomId = getBoardStateValue("roomId");
     const playingId = getBoardStateValue("playingId");
-    socket?.emit("get-game-pos", {
+    socket.emit("get-game-pos", {
       roomId: roomId,
       playerId: playingId,
     });
-  }, [getBoardStateValue, socket]);
+  }, [getBoardStateValue, getSocketValue]);
 
   const handleGameOver = useCallback(() => {
+    const socket = getSocketValue();
+    if (!socket) return;
     const roomId = getBoardStateValue("roomId");
     const playingId = getBoardStateValue("playingId");
-    socket?.emit("get-game-over-info", {
+
+    socket.emit("get-game-over-info", {
       roomId: roomId,
       playerId: playingId,
     });
-  }, [socket, getBoardStateValue]);
+  }, [getSocketValue, getBoardStateValue]);
 
   const handleGameOverInfo = useCallback(
     (data: {
@@ -253,8 +264,9 @@ export const useGameIo = () => {
   );
 
   useEffect(() => {
-    const playingId = getBoardStateValue("playingId");
+    const socket = getSocketValue();
     if (!socket) return;
+    const playingId = getBoardStateValue("playingId");
 
     if (roomId && gameStarted) {
       socket.emit("get-game-pos", {
@@ -262,16 +274,32 @@ export const useGameIo = () => {
         playerId: playingId,
       });
     }
-  }, [
-    roomId,
-    gameStarted,
-    socket,
-    setBoardState,
-    setBoardStateValue,
-    getBoardStateValue,
-  ]);
+  }, [roomId, gameStarted, getSocketValue, getBoardStateValue]);
+
+  // useEffect(() => {
+  //   console.log(roomId);
+  //   console.log(gameStarted);
+  //   console.log(getSocketValue);
+  //   console.log(setBoardState);
+  //   console.log(setBoardStateValue);
+  //   console.log(getBoardStateValue);
+  //   console.log(setPossibleMoves);
+  //   console.log(createSocketConnection);
+  //   console.log(deleteSocketConnection);
+  //   console.log(resignGame);
+  // }, [
+  //   roomId,
+  //   gameStarted,
+  //   resignGame,
+  //   getSocketValue,
+  //   setBoardState,
+  //   setBoardStateValue,
+  //   getBoardStateValue,
+  //   setPossibleMoves,
+  //   createSocketConnection,
+  //   deleteSocketConnection,
+  // ]);
   return {
-    socket,
     startNewGame,
     resignGame,
     handleConnected,

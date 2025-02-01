@@ -10,7 +10,7 @@ export const useBoard = create<{
   resetBoardState: () => void;
   setBoardStateValue: (values: Partial<BoardState>) => void;
   getBoardStateValue: <K extends BoardStateKey>(key: K) => BoardState[K];
-}>((set,get) => ({
+}>((set, get) => ({
   boardState: {
     gameTime: 3,
     waiting: false,
@@ -70,5 +70,5 @@ export const useBoard = create<{
         ...values,
       },
     })),
-    getBoardStateValue: (key) => get().boardState[key],
+  getBoardStateValue: (key) => get().boardState[key],
 }));

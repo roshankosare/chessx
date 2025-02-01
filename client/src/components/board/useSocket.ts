@@ -7,6 +7,7 @@ export const useSocket = create<{
   socket: Socket | null;
   createSocketConnection: () => void;
   deleteSocketConnection: () => void;
+  getSocketValue: () => Socket | null;
 }>((set, get) => ({
   socket: null,
 
@@ -24,4 +25,5 @@ export const useSocket = create<{
       set(() => ({ socket: null })); // Function inside set prevents unnecessary re-renders
     }
   },
+  getSocketValue: () => get().socket,
 }));

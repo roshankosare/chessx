@@ -5,19 +5,19 @@ import { useTiles } from "./useTiles";
 import { useSocket } from "./useSocket";
 
 const PlotTiles = () => {
-  const { tiles, setTiles, reverseTiles, setPossibleMoves, selectPiece } =
-    useTiles();
+  const { tiles, reverseTiles, setPossibleMoves, selectPiece } = useTiles();
   const getBoardStateValue = useBoard((state) => state.getBoardStateValue);
   const setBoardState = useBoard((state) => state.setBoardState);
   const setBoardStateValue = useBoard((state) => state.setBoardStateValue);
-  const boardPos = useBoard((state) => state.boardState.boardPos);
   const playingAs = useBoard((state) => state.boardState.playingAS);
-  const { socket } = useSocket();
+  const { getSocketValue } = useSocket();
 
+  
   const selectSquare = useCallback(
     (id: string, selected: boolean) => {
       const playingAs = getBoardStateValue("playingAS");
       const selectedPiece = getBoardStateValue("selectedPiece");
+      const socket = getSocketValue();
       if (selectedPiece == id) {
         // if slected piece is selected again then unselect it
         selected = false;
@@ -81,7 +81,7 @@ const PlotTiles = () => {
       }
     },
     [
-      socket,
+      getSocketValue,
       getBoardStateValue,
       setBoardState,
       selectPiece,
@@ -89,10 +89,6 @@ const PlotTiles = () => {
       setBoardStateValue,
     ]
   );
-
-  useEffect(() => {
-    if (boardPos) setTiles(boardPos);
-  }, [boardPos, setTiles]);
 
   useEffect(() => {
     if (playingAs == "b") {

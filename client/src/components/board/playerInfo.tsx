@@ -1,12 +1,9 @@
-import { PlayingAS } from "@/types";
 import { Clock } from "lucide-react";
 import React from "react";
 import { useBoard } from "./useBoard";
 
 type PlayerInfoProps = {
   type: "p" | "o";
-  playingAS?: PlayingAS;
-  username?: string;
 };
 
 const formatter = new Intl.NumberFormat("en-US", {
@@ -14,13 +11,11 @@ const formatter = new Intl.NumberFormat("en-US", {
   useGrouping: false,
 });
 
-const PlayerInfo: React.FC<PlayerInfoProps> = ({
-  type,
-  playingAS,
-  username,
-}) => {
+const PlayerInfo: React.FC<PlayerInfoProps> = ({ type }) => {
   const user = useBoard((state) => state.boardState.playersInfo.user);
   const opponent = useBoard((state) => state.boardState.playersInfo.opponent);
+  const playingAs = useBoard((state) => state.boardState.playingAS);
+  const username = type === "p" ? user.username : opponent.username;
   return (
     <div className=" w-full h-12 flex justify-between items-center px-2">
       <div className="w-auto px-4 py-2 flex gap-x-2 text-center ">
@@ -33,10 +28,10 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({
       <div
         className={`font-bold  text-sm sm:text-md px-4 py-2 sm:py-3  w-24 sm:w-28 rounded-md flex justify-between  ${
           type === "p"
-            ? playingAS === "w"
+            ? playingAs === "w"
               ? "bg-white text-black"
               : "bg-black text-white"
-            : playingAS === "b"
+            : playingAs === "b"
             ? "bg-white text-black"
             : "bg-black text-white"
         } 

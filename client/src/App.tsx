@@ -1,44 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
-import { Button } from "./components/ui/button";
-import Board from "./components/board/board";
 import { useBoard } from "./components/board/useBoard";
-import { useGame } from "./components/board/useGame";
-import SelectTime from "./components/board/selectTime";
-import PlayerInfo from "./components/board/playerInfo";
-import GameOver from "./components/board/gameOver";
-import { GameTime } from "./types";
-import ResignGame from "./components/board/resignGame";
+import GameNav from "./components/board/gameNav";
+import GameWindow from "./components/board/gameWindow";
+import { useRenderCount } from "./components/board/useRenderCount";
 
 function App() {
   const [start, setStart] = useState<boolean>(false);
-  const [openGameOverWindow, setOpenGameOverWindow] = useState<boolean>(false);
-  const [openResignGame, setOpenResignGame] = useState<boolean>(false);
-
-  const { startNewGame, resignGame } = useGame();
   const containerRef = useRef<HTMLDivElement>(null);
   const [boardSize, setBoardSize] = useState<number>(500);
 
-  const setBoardState = useBoard((state) => state.setBoardState);
-  const resetBoardState = useBoard((state) => state.resetBoardState);
-  const opponentUsername = useBoard(
-    (state) => state.boardState.playersInfo.opponent.username
-  );
-  const userUsername = useBoard(
-    (state) => state.boardState.playersInfo.user.username
-  );
-  const gameStatus = useBoard((state) => state.boardState.gameStatus);
   const gameStarted = useBoard((state) => state.boardState.gameStarted);
-  const wonBy = useBoard((state) => state.boardState.wonBy);
   const waiting = useBoard((state) => state.boardState.waiting);
-  const playingAs = useBoard((state) => state.boardState.playingAS);
-  const gameTime = useBoard((state) => state.boardState.gameTime);
 
-  useEffect(() => {
-    if (gameStatus !== "ready") {
-      setOpenGameOverWindow(true);
-    }
-  }, [gameStatus]);
+  useRenderCount();
   useEffect(() => {
     const container = containerRef.current; // Capture the ref value in a variable
 
@@ -73,19 +48,7 @@ function App() {
         className=" w-full sm:max-w-[800px] mx-auto bg-neutral-800 sm:px-10  text-white flex flex-col gap-y-5 py-5 rounded-lg shadow-lg"
       >
         {gameStarted ? (
-          <div className="w-full h-full flex flex-col gap-y-2">
-            <PlayerInfo
-              type="o"
-              username={opponentUsername || undefined}
-              playingAS={playingAs || undefined}
-            />
-            <Board size={boardSize}></Board>
-            <PlayerInfo
-              type="p"
-              username={userUsername || undefined}
-              playingAS={playingAs || undefined}
-            />
-          </div>
+          <GameWindow size={boardSize} />
         ) : (
           // <></>
           <div className=" w-full px-2  h-auto sm:w-[500px] sm:h-[500px] mx-auto my-auto relative">
@@ -101,70 +64,8 @@ function App() {
             />
           </div>
         )}
-        <div className="flex flex-row justify-center gap-x-4">
-          {start ? (
-            <Button
-              className="text-lg font-bold"
-              onClick={() => {
-                setOpenResignGame(true);
-                // setStart(false);
-                // endGame();
-              }}
-            >
-              Resign
-            </Button>
-          ) : (
-            <>
-              <Button
-                className="text-md font-bold"
-                onClick={() => {
-                  setStart(true);
-                  startNewGame();
-                }}
-              >
-                Play Random
-              </Button>
-              <SelectTime
-                time={gameTime}
-                setTime={(time: number) => {
-                  setBoardState("gameTime", time as GameTime);
-                }}
-              />{" "}
-              {/* <Button className="text-lg font-bold">Play Random</Button> */}
-            </>
-          )}
-        </div>
+        <GameNav start={start} setStart={(value:boolean) => setStart(value)} />
       </div>
-      <ResignGame
-        open={openResignGame}
-        onOpenChange={() => {
-          setOpenResignGame(false);
-        }}
-        resignGame={() => {
-          resignGame();
-          setOpenResignGame(false);
-        }}
-      />
-      <GameOver
-        openGameOverWindow={openGameOverWindow}
-        playerWon={
-          gameStatus === "whiteWins"
-            ? "White Win"
-            : gameStatus === "blackWins"
-            ? "Black win"
-            : gameStatus === "draw"
-            ? "Draw"
-            : gameStatus === "stalemate"
-            ? "Stalemate"
-            : "Draw"
-        }
-        message={wonBy || ""}
-        onOpenChange={() => {
-          setOpenGameOverWindow(false);
-          resetBoardState();
-          setStart(false);
-        }}
-      />
     </div>
   );
 }
