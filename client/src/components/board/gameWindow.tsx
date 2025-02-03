@@ -3,10 +3,10 @@ import PlayerInfo from "./playerInfo";
 import Board from "./board";
 
 type GameWindowProps = {
-    size:number;
-}
+  size: number;
+};
 
-const GameWindow:React.FC<GameWindowProps> = ({size}) => {
+const GameWindow: React.FC<GameWindowProps> = ({ size }) => {
   return (
     <div className="w-full h-full flex flex-col gap-y-2">
       <PlayerInfo type="o" />

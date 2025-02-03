@@ -3,17 +3,15 @@ import "./App.css";
 import { useBoard } from "./components/board/useBoard";
 import GameNav from "./components/board/gameNav";
 import GameWindow from "./components/board/gameWindow";
-import { useRenderCount } from "./components/board/useRenderCount";
+import NavBar from "./components/board/NavBar";
 
 function App() {
-  const [start, setStart] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [boardSize, setBoardSize] = useState<number>(500);
 
   const gameStarted = useBoard((state) => state.boardState.gameStarted);
   const waiting = useBoard((state) => state.boardState.waiting);
 
-  useRenderCount();
   useEffect(() => {
     const container = containerRef.current; // Capture the ref value in a variable
 
@@ -42,16 +40,17 @@ function App() {
   // console.log(boardState.selectedPiece);
 
   return (
-    <div className="w-full  h-screen sm:px-5 sm:py-5 flex flex-col gap-y-5 bg-neutral-700 ">
+    <div className="w-full h-screen  overflow-x-scroll flex flex-col gap-y-5 bg-neutral-900 ">
+      <NavBar />
       <div
         ref={containerRef}
-        className=" w-full sm:max-w-[800px] mx-auto bg-neutral-800 sm:px-10  text-white flex flex-col gap-y-5 py-5 rounded-lg shadow-lg"
+        className=" w-full h-auto sm:max-w-[800px]  mx-auto sm:px-10  text-white flex  flex-col justify-center sm:flex-row gap-y-5 py-5 sm:gap-x-5"
       >
         {gameStarted ? (
           <GameWindow size={boardSize} />
         ) : (
           // <></>
-          <div className=" w-full px-2  h-auto sm:w-[500px] sm:h-[500px] mx-auto my-auto relative">
+          <div className=" w-full px-2  h-auto sm:w-[500px] sm:h-[500px] my-auto relative">
             {waiting && !gameStarted && (
               <div className="absolute inset-0 flex justify-center items-center">
                 <div className="w-20 h-20 border-8 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
@@ -64,7 +63,7 @@ function App() {
             />
           </div>
         )}
-        <GameNav start={start} setStart={(value:boolean) => setStart(value)} />
+        <GameNav />
       </div>
     </div>
   );

@@ -1,14 +1,14 @@
 import { useEffect } from "react";
-import { useGameIo } from "./useGameIo";
+import { useGameSocketIo } from "./useGameSocketIo";
 import { useSocket } from "./useSocket";
-import { useRenderCount } from "./useRenderCount";
+import { useBoard } from "./useBoard";
 
 export const useGame = () => {
-  const { socket } = useSocket();
-  useRenderCount()
+  const { socket, getSocketValue } = useSocket();
+  const getBoardStateValue = useBoard((state) => state.getBoardStateValue);
+  const gameStarted = useBoard((state) => state.boardState.gameStarted);
+
   const {
-    startNewGame,
-    resignGame,
     handleConnected,
     handleRoomJoind,
     handleWaiting,
@@ -20,7 +20,7 @@ export const useGame = () => {
     handleClockUpdate,
     handleGameOver,
     handleGameOverInfo,
-  } = useGameIo();
+  } = useGameSocketIo();
 
   useEffect(() => {
     if (!socket) return;
@@ -66,5 +66,17 @@ export const useGame = () => {
     handleGameOverInfo,
   ]);
 
-  return { startNewGame, resignGame };
+  useEffect(() => {
+    const socket = getSocketValue();
+    if (!socket) return;
+    const playingId = getBoardStateValue("playingId");
+    const roomId = getBoardStateValue("roomId");
+
+    if (roomId && gameStarted) {
+      socket.emit("get-game-pos", {
+        roomId: roomId,
+        playerId: playingId,
+      });
+    }
+  }, [gameStarted, getBoardStateValue, getSocketValue]);
 };

@@ -18,15 +18,22 @@ const SelectTime: React.FC<SelectTimeProps> = ({ time, setTime }) => {
     <div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button className=" font-bold" >{time} min</Button>
+          <Button className="  w-full h-[60px] rounded-md  ">
+            <p className="sm:text-2xl text-xl sm:font-extrabold font-bold">
+              {" "}
+              {time} min
+            </p>
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuLabel>Game time</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={()=>setTime(1)}>1 min</DropdownMenuItem>
-          <DropdownMenuItem onClick={()=>setTime(3)}>3 min</DropdownMenuItem>
-          <DropdownMenuItem onClick={()=>setTime(5)}>5 min</DropdownMenuItem>
-          <DropdownMenuItem onClick={()=>setTime(10)}>10 min</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setTime(1)}>1 min</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setTime(3)}>3 min</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setTime(5)}>5 min</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setTime(10)}>
+            10 min
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

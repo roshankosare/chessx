@@ -64,7 +64,8 @@ export type BoardStateKey =
   | "playersInfo"
   | "move"
   | "gameStatus"
-  | "wonBy";
+  | "wonBy"
+  | "possibleMoves";
 
 export type BoardStateValue = {
   gameTime: GameTime;
@@ -82,6 +83,7 @@ export type BoardStateValue = {
   move: { from: string | null; to: string | null };
   gameStatus: GameStatus;
   wonBy: WonBy | null;
+  possibleMoves: string[];
 }[BoardStateKey]; // This maps the BoardStateKey to its specific type
 
 export interface BoardState {
@@ -100,4 +102,5 @@ export interface BoardState {
   move: { from: string | null; to: string | null };
   gameStatus: GameStatus;
   wonBy: WonBy | null;
+  possibleMoves: string[];
 }

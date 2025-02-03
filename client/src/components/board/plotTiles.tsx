@@ -3,16 +3,31 @@ import Tile from "./tile";
 import { useBoard } from "./useBoard";
 import { useTiles } from "./useTiles";
 import { useSocket } from "./useSocket";
+import { useRenderCount } from "./useRenderCount";
+import { useShallow } from "zustand/shallow";
 
 const PlotTiles = () => {
-  const { tiles, reverseTiles, setPossibleMoves, selectPiece } = useTiles();
-  const getBoardStateValue = useBoard((state) => state.getBoardStateValue);
-  const setBoardState = useBoard((state) => state.setBoardState);
-  const setBoardStateValue = useBoard((state) => state.setBoardStateValue);
-  const playingAs = useBoard((state) => state.boardState.playingAS);
-  const { getSocketValue } = useSocket();
+  const { tiles, reverseTiles, setPossibleMoves, selectPiece, setTiles } =
+    useTiles();
 
-  
+  const [playingAs, boardPos, possibleMoves] = useBoard(
+    useShallow((state) => [
+      state.boardState.playingAS,
+      state.boardState.boardPos,
+      state.boardState.possibleMoves,
+    ])
+  );
+
+  const [getBoardStateValue, setBoardState, setBoardStateValue] = useBoard(
+    useShallow((state) => [
+      state.getBoardStateValue,
+      state.setBoardState,
+      state.setBoardStateValue,
+    ])
+  );
+
+  const { getSocketValue } = useSocket();
+  useRenderCount();
   const selectSquare = useCallback(
     (id: string, selected: boolean) => {
       const playingAs = getBoardStateValue("playingAS");
@@ -55,6 +70,7 @@ const PlotTiles = () => {
               },
             });
           }
+
           setPossibleMoves([]);
 
           return;
@@ -95,6 +111,18 @@ const PlotTiles = () => {
       reverseTiles();
     }
   }, [playingAs, reverseTiles]);
+
+  useEffect(() => {
+    if (possibleMoves.length > 0) {
+      setPossibleMoves([...possibleMoves]);
+    }
+  }, [setPossibleMoves, possibleMoves]);
+
+  useEffect(() => {
+    if (boardPos) {
+      setTiles(boardPos);
+    }
+  }, [setTiles, boardPos]);
   return (
     <>
       {tiles.map((t) => (
