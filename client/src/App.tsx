@@ -44,7 +44,7 @@ function App() {
       <NavBar />
       <div
         ref={containerRef}
-        className=" w-full h-auto sm:max-w-[800px]  mx-auto sm:px-10  text-white flex  flex-col justify-center sm:flex-row gap-y-5 py-5 sm:gap-x-5"
+        className=" w-full h-auto sm:max-w-[1200px]  mx-auto sm:px-10  text-white flex  flex-col justify-center sm:flex-row gap-y-5 py-5 sm:gap-x-5"
       >
         {gameStarted ? (
           <GameWindow size={boardSize} />
