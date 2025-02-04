@@ -13,7 +13,6 @@ const GameNav = () => {
   const [openGameOverWindow, setOpenGameOverWindow] = useState<boolean>(false);
   const [openResignGame, setOpenResignGame] = useState<boolean>(false);
   const gameStatus = useBoard((state) => state.boardState.gameStatus);
-  const wonBy = useBoard((state) => state.boardState.wonBy);
   const { startNewGame, resignGame } = useGameIo();
   const [showGameSlection, setShowGameSlection] = useState<boolean>(false);
   const [start, setStart] = useState<boolean>(false);
@@ -95,20 +94,9 @@ const GameNav = () => {
         }}
       />
       <GameOver
-        setStart={() => setStart(false)}
+        setStart={(value: boolean) => setStart(value)}
+        startNewGame={() => startNewGame()}
         openGameOverWindow={openGameOverWindow}
-        playerWon={
-          gameStatus === "whiteWins"
-            ? "White Win"
-            : gameStatus === "blackWins"
-            ? "Black win"
-            : gameStatus === "draw"
-            ? "Draw"
-            : gameStatus === "stalemate"
-            ? "Stalemate"
-            : "Draw"
-        }
-        message={wonBy || ""}
         onOpenChange={() => {
           setOpenGameOverWindow(false);
         }}

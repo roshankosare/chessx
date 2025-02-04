@@ -23,7 +23,7 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({ type }) => {
           src="/user-icon.jpg"
           className="s w-8 h-8 sm:w-10 sm:h-10 my-auto"
         />
-        <div className="my-auto  text-sm font-bold sm:text-lg ">{username}</div>
+        <div className="my-auto  text-sm sm:text-md ">{username}</div>
       </div>
       <div
         className={`font-bold  text-sm sm:text-md px-4 py-2 sm:py-3  w-24 sm:w-28 rounded-md flex justify-between  ${

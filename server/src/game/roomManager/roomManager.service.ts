@@ -25,9 +25,13 @@ export class RoomManagerService {
               ? 60 * 3 * 1000
               : 60 * 1 * 1000,
       playerBlackRemainingTime:
-        time == 10 ? 60 * 10 * 1000 : time == 5 ? 60 * 5 * 1000 : time == 3
-        ? 60 * 3 * 1000
-        : 60 * 1 * 1000,
+        time == 10
+          ? 60 * 10 * 1000
+          : time == 5
+            ? 60 * 5 * 1000
+            : time == 3
+              ? 60 * 3 * 1000
+              : 60 * 1 * 1000,
       game: new Chess(),
       gameResult: null,
       gameResultCause: null,

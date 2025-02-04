@@ -111,12 +111,12 @@ export const useGameSocketIo = () => {
       setBoardStateValue({
         playersInfo: {
           user: {
-            username: "me",
+            username: data.user.username,
             remainingTime: data.user.remainingTime,
             avatar: "",
           },
           opponent: {
-            username: "user",
+            username: data.oponent.username,
             remainingTime: data.oponent.remainingTime,
             avatar: "",
           },

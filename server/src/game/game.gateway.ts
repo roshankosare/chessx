@@ -11,6 +11,7 @@ import { Server, Socket } from 'socket.io';
 import { GameManagerService } from './gameManager/gameManager.service';
 import { Square } from 'chess.js';
 import { GameTime } from './roomManager/room.interface';
+import { generateNumericID } from 'src/utils';
 
 @WebSocketGateway({
   cors: {
@@ -37,11 +38,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
   ) {
     try {
-      console.log(data.time);
-      const roomId = this.gameManagerService.joinRoom(
-        data.id,
-        data.time as GameTime,
-      );
+      const id = data.id;
+      const time = data.time;
+
+      if (!id && !time) {
+        return;
+      }
+      const roomId = this.gameManagerService.joinRoom(id, time as GameTime);
       if (roomId) {
         client.join(roomId);
         client.emit('room-joined', {
@@ -84,32 +87,37 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
   ) {
     try {
-      const room = this.gameManagerService.getGameInfo(data.roomId);
+      const roomId = data.roomId;
+      const playerId = data.playerId;
+      if (!roomId || !playerId) {
+        return;
+      }
+      const room = this.gameManagerService.getGameInfo(roomId);
 
       if (!room) {
         return;
       }
-      if (room.playerWhite === data.playerId)
+      if (room.playerWhite === playerId)
         client.emit('game-info', {
           user: {
-            username: 'user',
+            username: 'guest' + generateNumericID(),
             remainingTime: room.playerWhiteRemainingTime,
           },
           oponent: {
-            username: 'oponent',
+            username: 'guest' + generateNumericID(),
             remainingTime: room.playerBlackRemainingTime,
           },
           playingAs: 'w',
         });
 
-      if (room.playerBlack === data.playerId)
+      if (room.playerBlack === playerId)
         client.emit('game-info', {
           user: {
-            username: 'user',
+            username: 'guest' + generateNumericID(),
             remainingTime: room.playerBlackRemainingTime,
           },
           oponent: {
-            username: 'oponent',
+            username: 'guest' + generateNumericID(),
             remainingTime: room.playerWhiteRemainingTime,
           },
           playingAs: 'b',
@@ -124,14 +132,16 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
   ) {
     try {
-      const room = this.gameManagerService.getGameInfo(data.roomId);
+      const roomId = data.roomId;
+      const playerId = data.playerId;
+      if (!roomId || !playerId) {
+        return;
+      }
+      const room = this.gameManagerService.getGameInfo(roomId);
       if (!room) {
         return;
       }
-      const gamePos = this.gameManagerService.getGamePosition(
-        data.playerId,
-        data.roomId,
-      );
+      const gamePos = this.gameManagerService.getGamePosition(playerId, roomId);
       if (gamePos) {
         client.emit('game-pos', {
           gameState: gamePos,
@@ -148,15 +158,20 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() data: { square: string; roomId: string; playerId: string },
     @ConnectedSocket() client: Socket,
   ) {
-    const room = this.gameManagerService.getGameInfo(data.roomId);
+    const roomId = data.roomId;
+    const playerId = data.playerId;
+    if (!roomId || !playerId) {
+      return;
+    }
+    const room = this.gameManagerService.getGameInfo(roomId);
     if (!room) {
       return;
     }
     const square: Square = data.square as Square;
 
     const posMoves = this.gameManagerService.getPosMoves(
-      data.playerId,
-      data.roomId,
+      playerId,
+      roomId,
       square,
     );
 
@@ -173,15 +188,22 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // @ConnectedSocket() client: Socket,
   ) {
     try {
-      const room = this.gameManagerService.getGameInfo(data.roomId);
+      const roomId = data.roomId;
+      const playerId = data.playerId;
+      const from = data.from;
+      const to = data.to;
+      if (!roomId || !playerId) {
+        return;
+      }
+      const room = this.gameManagerService.getGameInfo(roomId);
       if (!room) {
         return;
       }
 
       const result = this.gameManagerService.makeMove(
-        { from: data.from, to: data.to },
-        data.playerId,
-        data.roomId,
+        { from: from, to: to },
+        playerId,
+        roomId,
       );
 
       this.io.to(data.roomId).emit('refresh-game-status');
@@ -219,7 +241,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() data: { square: string; roomId: string; playerId: string },
   ) {
     try {
-      const room = this.gameManagerService.getGameInfo(data.roomId);
+      const roomId = data.roomId;
+      const playerId = data.playerId;
+      if (!roomId || !playerId) {
+        return;
+      }
+      const room = this.gameManagerService.getGameInfo(roomId);
       if (!room) {
         return;
       }
