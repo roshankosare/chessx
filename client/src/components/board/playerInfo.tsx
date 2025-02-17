@@ -1,6 +1,8 @@
 import { Clock } from "lucide-react";
 import React from "react";
 import { useBoard } from "./useBoard";
+import { getPieceImage } from "@/lib/chess";
+import { TakenPieces } from "./takenPiece";
 
 type PlayerInfoProps = {
   type: "p" | "o";
@@ -15,6 +17,12 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({ type }) => {
   const user = useBoard((state) => state.boardState.playersInfo.user);
   const opponent = useBoard((state) => state.boardState.playersInfo.opponent);
   const playingAs = useBoard((state) => state.boardState.playingAS);
+  const blackCapturedPieces = useBoard(
+    (state) => state.boardState.blackCapturedPieces
+  );
+  const whiteCapturedPieces = useBoard(
+    (state) => state.boardState.whiteCapturedPieces
+  );
   const username = type === "p" ? user.username : opponent.username;
   return (
     <div className=" w-full h-12 flex justify-between items-center px-2">
@@ -23,7 +31,25 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({ type }) => {
           src="/user-icon.jpg"
           className="s w-8 h-8 sm:w-10 sm:h-10 my-auto"
         />
-        <div className="my-auto  text-sm sm:text-md ">{username}</div>
+        <div className="flex flex-col">
+          <div className="my-auto  text-sm sm:text-md ">{username}</div>
+          <div className="flex">
+            {playingAs === "w" && type === "p" && (
+              <TakenPieces pieces={blackCapturedPieces}  type="b"/>
+            )}
+
+            {playingAs === "w" && type === "o" && (
+              <TakenPieces pieces={whiteCapturedPieces}  type="w"/>
+            )}
+            {playingAs === "b" && type === "o" && (
+              <TakenPieces pieces={blackCapturedPieces}  type="b"/>
+            )}
+
+            {playingAs === "b" && type === "p" && (
+              <TakenPieces pieces={whiteCapturedPieces} type="w" />
+            )}
+          </div>
+        </div>
       </div>
       <div
         className={`font-bold  text-sm sm:text-md px-4 py-2 sm:py-3  w-24 sm:w-28 rounded-md flex justify-between  ${

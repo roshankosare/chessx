@@ -128,15 +128,22 @@ export const useGameSocketIo = () => {
   );
 
   const handleGamePos = useCallback(
-    (data: { gameState: [] }) => {
-      // console.log(data);
-      const pos: BoardPos | null = getBoardPosition(data.gameState);
+    (data: {
+      gamePos: [];
+      whiteCapturedPieces: string[];
+      blackCapturedPieces: string[];
+    }) => {
+      const pos: BoardPos | null = getBoardPosition(data.gamePos);
+      setBoardStateValue({
+        whiteCapturedPieces: data.whiteCapturedPieces,
+        blackCapturedPieces: data.blackCapturedPieces,
+      });
 
       // console.log(data);
       // if (pos) setTiles(pos);
       if (pos) setBoardState("boardPos", pos);
     },
-    [setBoardState]
+    [setBoardState,setBoardStateValue]
   );
 
   const handlePosMoves = useCallback(

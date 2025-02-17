@@ -10,6 +10,8 @@ export interface Room {
   time: GameTime;
   turn: 'w' | 'b';
   playerWhiteRemainingTime: number;
+  whiteCapturedPieces: string[];
+  blackCapturedPieces: string[];
   playerBlackRemainingTime: number | null;
   gameResult: 'w' | 'b' | 'd' | 's' | null;
   gameResultCause:

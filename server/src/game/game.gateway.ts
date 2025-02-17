@@ -141,10 +141,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (!room) {
         return;
       }
-      const gamePos = this.gameManagerService.getGamePosition(playerId, roomId);
-      if (gamePos) {
+      const pos = this.gameManagerService.getGamePosition(playerId, roomId);
+      if (pos) {
         client.emit('game-pos', {
-          gameState: gamePos,
+          gamePos: pos.gamePos,
+          whiteCapturedPieces: pos.whiteCapturedPieces,
+          blackCapturedPieces: pos.blackCapturedPieces,
         });
       }
       return;

@@ -28,6 +28,8 @@ export const useBoard = create<{
     gameStatus: "ready",
     wonBy: null,
     possibleMoves: [],
+    whiteCapturedPieces: [],
+    blackCapturedPieces: [],
   },
 
   setBoardState: (key, value) =>
@@ -63,6 +65,8 @@ export const useBoard = create<{
         gameStatus: "ready",
         wonBy: null,
         possibleMoves: [],
+        whiteCapturedPieces:[],
+blackCapturedPieces: []
       },
     })),
   setBoardStateValue: (values: Partial<BoardState>) =>

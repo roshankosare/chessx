@@ -16,3 +16,46 @@ export const deleteSocketConnection = (socket: Socket) => {
 };
 
 
+export const getPieceImage = (value: string): string => {
+  const pieceBaseUrl = "/assets/";
+  switch (value) {
+    case "wp":
+      return pieceBaseUrl + "wp.svg";
+
+    case "bp":
+      return pieceBaseUrl + "bp.svg";
+
+    case "wb":
+      return pieceBaseUrl + "wb.svg";
+
+    case "bb":
+      return pieceBaseUrl + "bb.svg";
+
+    case "wn":
+      return pieceBaseUrl + "wn.svg";
+
+    case "bn":
+      return pieceBaseUrl + "bn.svg";
+
+    case "wr":
+      return pieceBaseUrl + "wr.svg";
+
+    case "br":
+      return pieceBaseUrl + "br.svg";
+
+    case "wq":
+      return pieceBaseUrl + "wq.svg";
+
+    case "bq":
+      return pieceBaseUrl + "bq.svg";
+
+    case "wk":
+      return pieceBaseUrl + "wk.svg";
+
+    case "bk":
+      return pieceBaseUrl + "bk.svg";
+  }
+
+  return "";
+};
+

@@ -84,9 +84,14 @@ export class GameManagerService {
       return;
     }
     const pos = room.game.board();
-    return room.playerWhite === player
-      ? pos
-      : pos.reverse().map((a) => a.reverse());
+    return {
+      gamePos:
+        room.playerWhite === player
+          ? pos
+          : pos.reverse().map((a) => a.reverse()),
+      blackCapturedPieces: room.blackCapturedPieces,
+      whiteCapturedPieces: room.whiteCapturedPieces,
+    };
   }
   getPosMoves(player: string, roomId: string, square: Square): string[] | null {
     try {
@@ -120,6 +125,7 @@ export class GameManagerService {
         return moves;
       }
       const moves = room.game.moves({ square: square, verbose: false });
+
       return moves;
     } catch (error) {
       console.log(error);
@@ -183,21 +189,30 @@ export class GameManagerService {
         throw new Error('invalid room Id');
       }
       if (room.playerWhite === player && room.turn === 'w') {
-        room.game.move({ from: move.from, to: move.to });
+        const moveResult = room.game.move({ from: move.from, to: move.to });
         if (room.game.isGameOver()) {
           this.setGameOverInfo(roomId);
           return 'gameover';
         }
-        room.turn = 'b';
+
         this.startBlackTime(room.roomId);
+        if (moveResult.captured) {
+          const capturedPiece = moveResult.captured;
+          room.blackCapturedPieces.push(capturedPiece);
+        }
+        room.turn = 'b';
         return 'next';
       }
       if (room.playerBlack === player && room.turn === 'b') {
-        room.game.move({ from: move.from, to: move.to });
+        const moveResult = room.game.move({ from: move.from, to: move.to });
 
         if (room.game.isGameOver()) {
           this.setGameOverInfo(roomId);
           return 'gameover';
+        }
+        if (moveResult.captured) {
+          const capturedPiece = moveResult.captured;
+          room.whiteCapturedPieces.push(capturedPiece);
         }
         room.turn = 'w';
         this.startWhiteTime(room.roomId);
