@@ -30,6 +30,7 @@ export const useBoard = create<{
     possibleMoves: [],
     whiteCapturedPieces: [],
     blackCapturedPieces: [],
+    moveHistory: [],
   },
 
   setBoardState: (key, value) =>
@@ -65,8 +66,9 @@ export const useBoard = create<{
         gameStatus: "ready",
         wonBy: null,
         possibleMoves: [],
-        whiteCapturedPieces:[],
-blackCapturedPieces: []
+        whiteCapturedPieces: [],
+        blackCapturedPieces: [],
+        moveHistory: [],
       },
     })),
   setBoardStateValue: (values: Partial<BoardState>) =>

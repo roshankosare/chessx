@@ -28,9 +28,7 @@ const SelectTime: React.FC<SelectTimeProps> = ({ time, setTime }) => {
       </Button>
 
       {showTimeOption && (
-        <div
-          className=" flex flex-wrap justify-around w-full h-auto gap-x-4 px-2 py-4 gap-y-4"
-        >
+        <div className=" flex flex-wrap justify-around w-full h-auto gap-x-4 px-2 py-4 gap-y-4">
           <Button
             className="bg-zinc-900 text-white px-4 p-2 w-28 h-10 flex justify-center gap-x-2"
             onClick={() => {

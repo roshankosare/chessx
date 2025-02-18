@@ -12,6 +12,7 @@ export interface Room {
   playerWhiteRemainingTime: number;
   whiteCapturedPieces: string[];
   blackCapturedPieces: string[];
+  moveHistory: [string, string| null][];
   playerBlackRemainingTime: number | null;
   gameResult: 'w' | 'b' | 'd' | 's' | null;
   gameResultCause:

@@ -91,6 +91,7 @@ export class GameManagerService {
           : pos.reverse().map((a) => a.reverse()),
       blackCapturedPieces: room.blackCapturedPieces,
       whiteCapturedPieces: room.whiteCapturedPieces,
+      moveHistory: room.moveHistory,
     };
   }
   getPosMoves(player: string, roomId: string, square: Square): string[] | null {
@@ -194,7 +195,10 @@ export class GameManagerService {
           this.setGameOverInfo(roomId);
           return 'gameover';
         }
-
+        room.moveHistory.push([
+          moveResult.piece + (moveResult.captured ? 'x' : '') + moveResult.to,
+          null,
+        ]);
         this.startBlackTime(room.roomId);
         if (moveResult.captured) {
           const capturedPiece = moveResult.captured;
@@ -210,6 +214,9 @@ export class GameManagerService {
           this.setGameOverInfo(roomId);
           return 'gameover';
         }
+
+        room.moveHistory[room.moveHistory.length - 1][1] =
+          moveResult.piece + (moveResult.captured ? 'x' : '') + moveResult.to;
         if (moveResult.captured) {
           const capturedPiece = moveResult.captured;
           room.whiteCapturedPieces.push(capturedPiece);

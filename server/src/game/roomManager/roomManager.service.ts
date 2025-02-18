@@ -35,8 +35,9 @@ export class RoomManagerService {
       game: new Chess(),
       gameResult: null,
       gameResultCause: null,
-      whiteCapturedPieces:[],
-      blackCapturedPieces:[]
+      whiteCapturedPieces: [],
+      blackCapturedPieces: [],
+      moveHistory: [],
     };
     return this.rooms[roomId];
   }

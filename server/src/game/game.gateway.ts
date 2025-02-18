@@ -147,6 +147,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
           gamePos: pos.gamePos,
           whiteCapturedPieces: pos.whiteCapturedPieces,
           blackCapturedPieces: pos.blackCapturedPieces,
+          moveHistory: pos.moveHistory,
         });
       }
       return;

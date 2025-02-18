@@ -133,11 +133,14 @@ export const useGameSocketIo = () => {
       gamePos: [];
       whiteCapturedPieces: string[];
       blackCapturedPieces: string[];
+      moveHistory: [];
     }) => {
+      
       const pos: BoardPos | null = getBoardPosition(data.gamePos);
       setBoardStateValue({
         whiteCapturedPieces: sortPiecesByPower(data.whiteCapturedPieces),
         blackCapturedPieces: sortPiecesByPower(data.blackCapturedPieces),
+        moveHistory: data.moveHistory,
       });
 
       // console.log(data);

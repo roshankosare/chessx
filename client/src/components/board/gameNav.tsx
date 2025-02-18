@@ -8,6 +8,8 @@ import ResignGame from "./resignGame";
 import { useGameIo } from "./useGameIo";
 import { useGame } from "./useGame";
 import { ArrowLeftCircleIcon } from "lucide-react";
+import { Table, TableBody, TableCell, TableRow } from "../ui/table";
+import { getPieceImage } from "@/lib/chess";
 
 const GameNav = () => {
   const [openGameOverWindow, setOpenGameOverWindow] = useState<boolean>(false);
@@ -18,6 +20,7 @@ const GameNav = () => {
   const [start, setStart] = useState<boolean>(false);
   const gameStarted = useBoard((state) => state.boardState.gameStarted);
   const waiting = useBoard((state) => state.boardState.waiting);
+  const moveHistory = useBoard((state) => state.boardState.moveHistory);
   useGame();
   useEffect(() => {
     if (gameStatus !== "ready") {
@@ -25,20 +28,60 @@ const GameNav = () => {
     }
   }, [gameStatus]);
   return (
-    <div className="flex  flex-col sm:gap-y-5  justify-center gap-x-4 gap-y-5 px-8">
+    <div className="flex  flex-col w-full sm:max-w-[400px] h-full  sm:gap-y-5  justify-center gap-x-4 gap-y-5 px-8">
       {!waiting && gameStarted && start ? (
-        <Button
-          className=" sm:w-[300px]  w-full h-[70px] sm:h-[80px] bg-green-800 flex shadow-sm shadow-white  gap-y-4  rounded-3xl"
-          onClick={() => {
-            setOpenResignGame(true);
-            // setStart();
-            // endGame();
-          }}
-        >
-          <p className="sm:text-3xl text-2xl sm:font-extrabold font-bold">
-            Resign Game
-          </p>
-        </Button>
+        <div className="w-full  flex flex-col bg-zinc-800 py-2 px-2">
+          <div className="w-full h-[300px] overflow-y-scroll px-2 py-2 scrollbar-hide [&::-webkit-scrollbar]:hidden">
+            <p className="w-full h-8 bg-zinc-900 text-center">moves</p>
+            <Table className="w-full ">
+              <TableBody>
+                {moveHistory.map((move, index) => (
+                  <TableRow
+                    className={`${
+                      index % 2 == 0 ? "" : "bg-zinc-900"
+                    } border-none`}
+                    key={index}
+                  >
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>
+                      {
+                        <div className="flex flex-row gap-x-1">
+                          <img
+                            src={getPieceImage("w" + move[0][0])}
+                            className="w-4 h-4 my-auto"
+                          />
+                          <p>{move[0].slice(1)}</p>
+                        </div>
+                      }
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-row gap-x-1">
+                        {move[1] && (
+                          <img
+                            src={getPieceImage("b" + move[1][0])}
+                            className="w-4 h-4 my-auto"
+                          />
+                        )}
+                        <p>{move[1]?.slice(1)}</p>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          <Button
+            size={"sm"}
+            className="px-2 py-6 items-center my-2 rounded-2xl "
+            onClick={() => {
+              setOpenResignGame(true);
+              // setStart();
+              // endGame();
+            }}
+          >
+            <p className="text-xl font-bold ">Resign Game</p>
+          </Button>
+        </div>
       ) : showGameSlection ? (
         <GameSlectionTab
           setStart={() => setStart(true)}
