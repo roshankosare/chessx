@@ -10,6 +10,7 @@ interface TilesStore {
   ) => void;
   setTiles: (boardPos: BoardPos) => void;
   reverseTiles: () => void;
+  resetTiles:()=>void;
 
   setPossibleMoves: (moves: string[]) => void;
 }
@@ -97,6 +98,7 @@ export const useTiles = create<TilesStore>((set) => ({
         .reverse()
         .flat() as unknown as ChessBoard,
     }));
+
   },
 
   setPossibleMoves: (moves: string[]) =>
@@ -115,4 +117,18 @@ export const useTiles = create<TilesStore>((set) => ({
         }
       }) as unknown as ChessBoard,
     })),
+    resetTiles:()=>set({
+      tiles:Array.from({ length: 64 }, (_, index) => {
+        const row = Math.floor(index / 8); // 8 columns
+        const col = index % 8;
+        const isBlack = (row + col) % 2 === 1;
+    
+        return {
+          id: generateTileId(row, col),
+          color: isBlack ? "#663500" : "#ffe6cc",
+          piece: null, // Start with no pieces
+          selected: false,
+        };
+      }) as unknown as ChessBoard
+    })
 }));

@@ -1,7 +1,6 @@
 import { Clock } from "lucide-react";
 import React from "react";
 import { useBoard } from "./useBoard";
-import { getPieceImage } from "@/lib/chess";
 import { TakenPieces } from "./takenPiece";
 
 type PlayerInfoProps = {
@@ -35,14 +34,14 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({ type }) => {
           <div className="my-auto  text-sm sm:text-md ">{username}</div>
           <div className="flex">
             {playingAs === "w" && type === "p" && (
-              <TakenPieces pieces={blackCapturedPieces}  type="b"/>
+              <TakenPieces pieces={blackCapturedPieces} type="b" />
             )}
 
             {playingAs === "w" && type === "o" && (
-              <TakenPieces pieces={whiteCapturedPieces}  type="w"/>
+              <TakenPieces pieces={whiteCapturedPieces} type="w" />
             )}
             {playingAs === "b" && type === "o" && (
-              <TakenPieces pieces={blackCapturedPieces}  type="b"/>
+              <TakenPieces pieces={blackCapturedPieces} type="b" />
             )}
 
             {playingAs === "b" && type === "p" && (

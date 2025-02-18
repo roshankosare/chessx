@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { useBoard } from "./useBoard";
 import { Button } from "../ui/button";
+import { useTiles } from "./useTiles";
 
 type GameOverProps = {
   openGameOverWindow: boolean;
@@ -29,6 +30,7 @@ const GameOver: React.FC<GameOverProps> = ({
   const playingAs = useBoard((state) => state.boardState.playingAS);
   const gameStatus = useBoard((state) => state.boardState.gameStatus);
   const wonBy = useBoard((state) => state.boardState.wonBy);
+  const resetTiles = useTiles((state) => state.resetTiles);
   const playerWon =
     gameStatus === "whiteWins"
       ? "White Win"
@@ -44,7 +46,6 @@ const GameOver: React.FC<GameOverProps> = ({
       open={openGameOverWindow}
       onOpenChange={() => {
         onOpenChange();
-        resetBoardState();
         setStart(false);
       }}
     >
@@ -81,6 +82,8 @@ const GameOver: React.FC<GameOverProps> = ({
         <div className="flex flex-row justify-around mb-10">
           <Button
             onClick={() => {
+              resetBoardState();
+              resetTiles();
               setStart(true);
               startNewGame();
               onOpenChange();
@@ -92,6 +95,7 @@ const GameOver: React.FC<GameOverProps> = ({
           <Button
             onClick={() => {
               onOpenChange();
+              resetTiles();
               resetBoardState();
               setStart(false);
             }}
