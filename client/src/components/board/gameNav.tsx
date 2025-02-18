@@ -118,7 +118,7 @@ export const GameSlectionTab: React.FC<GameSlectionTabProps> = ({
   const gameTime = useBoard((state) => state.boardState.gameTime);
   const setBoardState = useBoard((state) => state.setBoardState);
   return (
-    <div className="bg-zinc-800 px-5 py-5 flex flex-col gap-y-5 w-full h-full">
+    <div className="bg-zinc-800 px-5 py-5 flex flex-col gap-y-5 w-full h-full max-w-[400px]">
       <div className=" flex  justify-end w-full h-[40px]">
         <ArrowLeftCircleIcon
           className="w-[30px] h-[30px]"

@@ -24,15 +24,17 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({ type }) => {
   );
   const username = type === "p" ? user.username : opponent.username;
   return (
-    <div className=" w-full h-12 flex justify-between items-center px-2">
-      <div className="w-auto px-4 py-2 flex gap-x-2 text-center ">
+    <div className=" w-full h-14 flex justify-between items-center px-2">
+      <div className="w-auto px-2  flex gap-x-2 text-center ">
         <img
           src="/user-icon.jpg"
           className="s w-8 h-8 sm:w-10 sm:h-10 my-auto"
         />
         <div className="flex flex-col">
-          <div className="my-auto  text-sm sm:text-md ">{username}</div>
-          <div className="flex">
+          <div className="my-auto  text-sm sm:text-md relative mt-0">
+            {username}
+          </div>
+         
             {playingAs === "w" && type === "p" && (
               <TakenPieces pieces={blackCapturedPieces} type="b" />
             )}
@@ -47,7 +49,7 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({ type }) => {
             {playingAs === "b" && type === "p" && (
               <TakenPieces pieces={whiteCapturedPieces} type="w" />
             )}
-          </div>
+         
         </div>
       </div>
       <div

@@ -3,6 +3,7 @@ import { useSocket } from "./useSocket";
 import { useBoard } from "./useBoard";
 import { useCallback } from "react";
 import { hasKeyOfType } from "@/lib/utils";
+import { sortPiecesByPower } from "@/lib/chess";
 
 const getBoardPosition = (
   gameState: Array<
@@ -135,15 +136,15 @@ export const useGameSocketIo = () => {
     }) => {
       const pos: BoardPos | null = getBoardPosition(data.gamePos);
       setBoardStateValue({
-        whiteCapturedPieces: data.whiteCapturedPieces,
-        blackCapturedPieces: data.blackCapturedPieces,
+        whiteCapturedPieces: sortPiecesByPower(data.whiteCapturedPieces),
+        blackCapturedPieces: sortPiecesByPower(data.blackCapturedPieces),
       });
 
       // console.log(data);
       // if (pos) setTiles(pos);
       if (pos) setBoardState("boardPos", pos);
     },
-    [setBoardState,setBoardStateValue]
+    [setBoardState, setBoardStateValue]
   );
 
   const handlePosMoves = useCallback(

@@ -59,3 +59,17 @@ export const getPieceImage = (value: string): string => {
   return "";
 };
 
+export const sortPiecesByPower = (pieces: string[]): string[] => {
+  const powerRanking: { [key: string]: number } = { 
+    'p': 1, 
+    'n': 2, 
+    'b': 3, 
+    'r': 4, 
+    'q': 5, 
+    'k': 6 
+  };
+
+  return pieces.sort((a, b) => powerRanking[a] - powerRanking[b]);
+};
+
+
