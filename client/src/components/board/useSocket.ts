@@ -1,7 +1,7 @@
 import { io, Socket } from "socket.io-client";
 import { create } from "zustand";
 
-const SOCKET_SERVER_URL = "http://localhost:5000";
+const SOCKET_SERVER_URL = "http://192.168.251.43:5000";
 
 export const useSocket = create<{
   socket: Socket | null;
