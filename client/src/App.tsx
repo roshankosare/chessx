@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
-import { useBoard } from "./components/board/useBoard";
+import { useBoard } from "./components/board/hooks/useBoard";
 import GameNav from "./components/board/gameNav";
 import GameWindow from "./components/board/gameWindow";
 import NavBar from "./components/board/NavBar";

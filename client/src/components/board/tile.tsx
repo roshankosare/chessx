@@ -1,15 +1,8 @@
 import React, { useState } from "react";
-import { useTiles } from "./useTiles";
+import { useTiles } from "./hooks/useTiles";
 
 export interface TileProps {
   index: number;
-  // color: string;
-  // piece: boolean;
-  // pcolor: string | null;
-  // ptype: string | null;
-
-  // id: string;
-  // selected: boolean;
   selectSquare: (id: string, square: boolean) => void;
 }
 
@@ -55,16 +48,7 @@ const getPieceImage = (value: string): string => {
 
   return "";
 };
-const Tile: React.FC<TileProps> = ({
-  index,
-  // color,
-  // pcolor,
-  // ptype,
-  // piece,
-  // id,
-  // selected,
-  selectSquare,
-}) => {
+const Tile: React.FC<TileProps> = ({ index, selectSquare }) => {
   const [isHovered, setIsHovered] = useState(false);
   const pieceColor = useTiles((state) => state.tiles[index].piece?.color);
   const pieceType = useTiles((state) => state.tiles[index].piece?.type);
@@ -72,7 +56,7 @@ const Tile: React.FC<TileProps> = ({
   const selected = useTiles((state) => state.tiles[index].selected);
   const color = useTiles((state) => state.tiles[index].color);
 
-  console.log(`tile rerender with id ${id}`);
+  // console.log(`tile rerender with id ${id}`);
   return (
     <div
       onClick={() => selectSquare(id, selected)}

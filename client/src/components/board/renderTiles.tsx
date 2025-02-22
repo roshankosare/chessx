@@ -1,4 +1,4 @@
-import { usePlotTiles } from "./usePlotTiles";
+import { usePlotTiles } from "./hooks/usePlotTiles";
 
 const RenderTiles = () => {
   usePlotTiles();

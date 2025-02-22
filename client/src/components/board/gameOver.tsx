@@ -6,9 +6,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useBoard } from "./useBoard";
+import { useBoard } from "./hooks/useBoard";
 import { Button } from "../ui/button";
-import { useTiles } from "./useTiles";
+import { useTiles } from "./hooks/useTiles";
 
 type GameOverProps = {
   openGameOverWindow: boolean;

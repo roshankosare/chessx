@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useBoard } from "./useBoard";
+import { useBoard } from "./hooks/useBoard";
 import { Button } from "../ui/button";
 import SelectTime from "./selectTime";
 import { GameTime } from "../../types";
 import GameOver from "./gameOver";
 import ResignGame from "./resignGame";
-import { useGameIo } from "./useGameIo";
-import { useGame } from "./useGame";
+import { useGameIo } from "./hooks/useGameIo";
+import { useGame } from "./hooks/useGame";
 import { ArrowLeftCircleIcon } from "lucide-react";
 import { Table, TableBody, TableCell, TableRow } from "../ui/table";
 import { getPieceImage } from "@/lib/chess";
@@ -30,15 +30,15 @@ const GameNav = () => {
   return (
     <div className="flex  flex-col w-full sm:max-w-[400px] h-full  sm:gap-y-5  justify-center gap-x-4 gap-y-5 px-8">
       {!waiting && gameStarted && start ? (
-        <div className="w-full  flex flex-col bg-zinc-800 py-2 px-2">
-          <div className="w-full h-[300px] overflow-y-scroll px-2 py-2 scrollbar-hide [&::-webkit-scrollbar]:hidden">
-            <p className="w-full h-8 bg-zinc-900 text-center">moves</p>
-            <Table className="w-full ">
+        <div className="w-full  flex flex-col bg-zinc-800">
+          <div className="w-full h-[300px] overflow-y-scroll  scrollbar-hide [&::-webkit-scrollbar]:hidden px-2">
+            <p className="w-full h-8 bg-zinc-800 text-center font-bold">Moves</p>
+            <Table className="w-full  ">
               <TableBody>
                 {moveHistory.map((move, index) => (
                   <TableRow
                     className={`${
-                      index % 2 == 0 ? "" : "bg-zinc-900"
+                      index % 2 == 0 ? "bg-zinc-900" : ""
                     } border-none`}
                     key={index}
                   >
@@ -70,17 +70,30 @@ const GameNav = () => {
               </TableBody>
             </Table>
           </div>
-          <Button
-            size={"sm"}
-            className="px-2 py-6 items-center my-2 rounded-2xl "
-            onClick={() => {
-              setOpenResignGame(true);
-              // setStart();
-              // endGame();
-            }}
-          >
-            <p className="text-xl font-bold ">Resign Game</p>
-          </Button>
+          <div className="flex justify-center gap-x-4">
+            <Button
+              size={"sm"}
+              className="px-4 py-2 items-center my-2 w-[120px]"
+              onClick={() => {
+                setOpenResignGame(true);
+                // setStart();
+                // endGame();
+              }}
+            >
+              <p className="text-sm">Resign Game</p>
+            </Button>
+            <Button
+              size={"sm"}
+              className="px-4 py-2 items-center my-2 w-[120px]"
+              onClick={() => {
+                // setOpenResignGame(true);
+                // setStart();
+                // endGame();
+              }}
+            >
+              <p className="text-sm">Draw</p>
+            </Button>
+          </div>
         </div>
       ) : showGameSlection ? (
         <GameSlectionTab

@@ -1,10 +1,10 @@
-import {  useEffect } from "react";
+import { useEffect } from "react";
 import { useBoard } from "./useBoard";
 import { useTiles } from "./useTiles";
 import { useShallow } from "zustand/shallow";
 
 export const usePlotTiles = () => {
-  const [reverseTiles, setPossibleMoves,setTiles] = useTiles(
+  const [reverseTiles, setPossibleMoves, setTiles] = useTiles(
     useShallow((state) => [
       state.reverseTiles,
       state.setPossibleMoves,

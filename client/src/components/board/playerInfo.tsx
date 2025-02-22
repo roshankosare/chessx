@@ -1,6 +1,6 @@
 import { Clock } from "lucide-react";
 import React from "react";
-import { useBoard } from "./useBoard";
+import { useBoard } from "./hooks/useBoard";
 import { TakenPieces } from "./takenPiece";
 
 type PlayerInfoProps = {

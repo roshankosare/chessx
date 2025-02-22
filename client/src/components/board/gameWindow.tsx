@@ -10,7 +10,7 @@ type GameWindowProps = {
 const GameWindow: React.FC<GameWindowProps> = ({ size }) => {
   return (
     <div className="w-full sm:max-w-[500px] h-full flex flex-col gap-y-2">
-      <RenderTiles/>
+      <RenderTiles />
       <PlayerInfo type="o" />
       <Board size={size}></Board>
       <PlayerInfo type="p" />
