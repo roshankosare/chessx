@@ -10,7 +10,7 @@ interface TilesStore {
   ) => void;
   setTiles: (boardPos: BoardPos) => void;
   reverseTiles: () => void;
-  resetTiles:()=>void;
+  resetTiles: () => void;
 
   setPossibleMoves: (moves: string[]) => void;
 }
@@ -20,32 +20,6 @@ const generateTileId = (row: number, col: number): string => {
   return `${letters[col]}${rows - row}`;
 };
 
-const boardPosToTileState = (
-  boardPos: BoardPos,
-  tileState: ChessBoard
-): ChessBoard => {
-  if (!boardPos) return boardPos; // In case board is null
-
-  const updatedBoard = tileState.map((tile, index) => {
-    const posElement = boardPos[index];
-
-    if (posElement === null) {
-      // If the BoardPosElement is null, leave the current board tile unchanged
-      return {
-        ...tile,
-        piece: null,
-      };
-    }
-
-    // If BoardPosElement is not null, update the corresponding tile
-    return {
-      ...tile,
-      piece: posElement?.piece || null, // Update the piece from BoardPosElement
-    };
-  });
-
-  return updatedBoard as unknown as ChessBoard;
-};
 
 export const useTiles = create<TilesStore>((set) => ({
   tiles: Array.from({ length: 64 }, (_, index) => {
@@ -65,30 +39,35 @@ export const useTiles = create<TilesStore>((set) => ({
     playingAs: PlayingAS | null,
     setCurrentPiece: (square: string | null) => void
   ) =>
-    set((state) => ({
-      tiles: state.tiles.map((tile) => {
-        if (tile.id == id && playingAs) {
-          const t = {
-            ...tile,
-            selected: tile.piece
-              ? playingAs == "w" && tile.piece.color == "w"
-                ? !tile.selected
-                : playingAs == "b" && tile.piece.color == "b"
-                ? !tile.selected
-                : false
-              : false,
-          };
-          setCurrentPiece(t.id);
-          return t;
-        }
+    set((state) => {
+      const tiles = state.tiles; // Keep reference
+      tiles.forEach((tile) => {
+        if (tile.id === id && playingAs) {
+          const isSelectable =
+            tile.piece &&
+            ((playingAs === "w" && tile.piece.color === "w") ||
+              (playingAs === "b" && tile.piece.color === "b"));
 
-        return { ...tile, selected: false };
-      }) as unknown as ChessBoard,
-    })),
+          tile.selected = isSelectable ? !tile.selected : false;
+          setCurrentPiece(tile.id);
+        } else {
+          tile.selected = false;
+        }
+      });
+      return { ...state, tiles }; // Ensure state object updates
+    }),
   setTiles: (boarPos: BoardPos) =>
-    set((state) => ({
-      tiles: boardPosToTileState(boarPos, state.tiles),
-    })),
+    set((state) => {
+      if (!boarPos) return state;
+
+      const tiles = state.tiles; // Keep the reference stable
+      tiles.forEach((tile, index) => {
+        const posElement = boarPos[index];
+        tile.piece = posElement ? posElement.piece : null;
+      });
+
+      return { ...state, tiles }; // Ensure React detects the state change
+    }),
 
   reverseTiles: () => {
     set((state) => ({
@@ -98,37 +77,30 @@ export const useTiles = create<TilesStore>((set) => ({
         .reverse()
         .flat() as unknown as ChessBoard,
     }));
-
   },
 
   setPossibleMoves: (moves: string[]) =>
-    set((state) => ({
-      tiles: state.tiles.map((tile) => {
-        if (moves.includes(tile.id)) {
-          return {
-            ...tile,
-            selected: true,
-          };
-        } else {
-          return {
-            ...tile,
-            selected: false, // Optionally reset selected for non-matching tiles
-          };
-        }
-      }) as unknown as ChessBoard,
-    })),
-    resetTiles:()=>set({
-      tiles:Array.from({ length: 64 }, (_, index) => {
+    set((state) => {
+      const tiles = state.tiles; // Keep the reference stable
+      tiles.forEach((tile) => {
+        tile.selected = moves.includes(tile.id);
+      });
+
+      return { ...state, tiles }; // Ensure React detects the state update
+    }),
+  resetTiles: () =>
+    set({
+      tiles: Array.from({ length: 64 }, (_, index) => {
         const row = Math.floor(index / 8); // 8 columns
         const col = index % 8;
         const isBlack = (row + col) % 2 === 1;
-    
+
         return {
           id: generateTileId(row, col),
           color: isBlack ? "#663500" : "#ffe6cc",
           piece: null, // Start with no pieces
           selected: false,
         };
-      }) as unknown as ChessBoard
-    })
+      }) as unknown as ChessBoard,
+    }),
 }));
