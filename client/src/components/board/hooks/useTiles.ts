@@ -29,7 +29,7 @@ export const useTiles = create<TilesStore>((set) => ({
 
     return {
       id: generateTileId(row, col),
-      color: isBlack ? "#663500" : "#ffe6cc",
+      color: isBlack ? "#034F0B" : "#DEFBE1",
       piece: null, // Start with no pieces
       selected: false,
     };
@@ -97,7 +97,7 @@ export const useTiles = create<TilesStore>((set) => ({
 
         return {
           id: generateTileId(row, col),
-          color: isBlack ? "#663500" : "#ffe6cc",
+          color: isBlack ? "#034F0B" : "#DEFBE1",
           piece: null, // Start with no pieces
           selected: false,
         };

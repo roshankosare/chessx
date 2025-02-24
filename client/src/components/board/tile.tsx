@@ -72,7 +72,7 @@ const Tile: React.FC<TileProps> = ({ index, selectSquare }) => {
         background: color,
         boxShadow:
           isHovered || selected
-            ? "inset 0 0 16px 16px rgba(0, 0, 0, 0.6)"
+            ? "inset 0 0 16px 16px rgba(0, 0, 0, 0.4)"
             : "none",
       }}
     >

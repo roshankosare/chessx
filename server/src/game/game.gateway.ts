@@ -187,7 +187,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('make-move')
   handleMakeMove(
     @MessageBody()
-    data: { from: string; to: string; roomId: string; playerId: string },
+    data: {
+      from: string;
+      to: string;
+      promotionPiece: string;
+      roomId: string;
+      playerId: string;
+    },
     // @ConnectedSocket() client: Socket,
   ) {
     try {
@@ -204,7 +210,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
 
       const result = this.gameManagerService.makeMove(
-        { from: from, to: to },
+        { from: from, to: to, promotion: data.promotionPiece },
         playerId,
         roomId,
       );

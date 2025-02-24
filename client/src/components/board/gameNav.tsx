@@ -10,6 +10,7 @@ import { useGame } from "./hooks/useGame";
 import { ArrowLeftCircleIcon } from "lucide-react";
 import { Table, TableBody, TableCell, TableRow } from "../ui/table";
 import { getPieceImage } from "@/lib/chess";
+import SelectPromotionPiece from "./selectPromotionPiece";
 
 const GameNav = () => {
   const [openGameOverWindow, setOpenGameOverWindow] = useState<boolean>(false);
@@ -21,6 +22,10 @@ const GameNav = () => {
   const gameStarted = useBoard((state) => state.boardState.gameStarted);
   const waiting = useBoard((state) => state.boardState.waiting);
   const moveHistory = useBoard((state) => state.boardState.moveHistory);
+  const showPomotionWindow = useBoard(
+    (state) => state.boardState.showPomotionWindow
+  );
+  const setBoardStateValue = useBoard((state) => state.setBoardStateValue);
   useGame();
   useEffect(() => {
     if (gameStatus !== "ready") {
@@ -32,7 +37,9 @@ const GameNav = () => {
       {!waiting && gameStarted && start ? (
         <div className="w-full  flex flex-col bg-zinc-800">
           <div className="w-full h-[300px] overflow-y-scroll  scrollbar-hide [&::-webkit-scrollbar]:hidden px-2">
-            <p className="w-full h-8 bg-zinc-800 text-center font-bold">Moves</p>
+            <p className="w-full h-8 bg-zinc-800 text-center font-bold">
+              Moves
+            </p>
             <Table className="w-full  ">
               <TableBody>
                 {moveHistory.map((move, index) => (
@@ -156,6 +163,14 @@ const GameNav = () => {
         onOpenChange={() => {
           setOpenGameOverWindow(false);
         }}
+      />
+      <SelectPromotionPiece
+        show={showPomotionWindow}
+        close={() =>
+          setBoardStateValue({
+            showPomotionWindow: false,
+          })
+        }
       />
     </div>
   );

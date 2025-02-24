@@ -135,7 +135,6 @@ export const useGameSocketIo = () => {
       blackCapturedPieces: string[];
       moveHistory: [];
     }) => {
-      
       const pos: BoardPos | null = getBoardPosition(data.gamePos);
       setBoardStateValue({
         whiteCapturedPieces: sortPiecesByPower(data.whiteCapturedPieces),
@@ -153,19 +152,37 @@ export const useGameSocketIo = () => {
   const handlePosMoves = useCallback(
     (data: { moves: [string] }) => {
       const playingAs = getBoardStateValue("playingAS");
-      // console.log(data);
+      console.log(data);
+      const promotionalMoves: string[] = data.moves.map((move) => {
+        return move[move.length - 1] === "+" || move[move.length - 1] === "#"
+          ? move[move.length - 3] === "="
+            ? move.slice(0, -3).slice(-2)
+            : ""
+          : move[move.length - 2] === "="
+          ? move.slice(0, -2).slice(-2)
+          : "";
+      });
+      setBoardStateValue({ promotionalMoves: promotionalMoves });
       const moves = data.moves.map((move) => {
         if (move === "O-O") return playingAs === "w" ? "g1" : "g8";
         if (move === "O-O-O") return playingAs === "w" ? "c1" : "c8";
-        return move.length <= 4
-          ? move[move.length - 1] == "+"
-            ? move.slice(0, -1).slice(-2)
-            : move.slice(-2)
-          : move.slice(0, -1).slice(-2);
+        return move.length >= 4
+          ? move[move.length - 1] === "+" || move[move.length - 1] === "#" //check or checkmate move
+            ? move[move.length - 3] === "="
+              ? move.slice(0, -3).slice(-2) // string has + at last and promotion move
+              : move.slice(0, -1).slice(-2) //string + but not promotion
+            : move[move.length - 2] === "="
+            ? move.slice(0, -2).slice(-2) //string has no + but promotion move
+            : move.slice(-2) // string has no plus ans not promotion move
+          : move.length > 2 &&
+            (move[move.length - 1] === "+" || move[move.length - 1] === "#")
+          ? move.slice(0, -1).slice(-2)// pawn move to check or checkmate without take
+          : move.slice(-2);
       });
+      console.log(moves);
       if (moves.length > 0) setBoardState("possibleMoves", moves);
     },
-    [getBoardStateValue, setBoardState]
+    [getBoardStateValue, setBoardState, setBoardStateValue]
   );
 
   const handleClockUpdate = useCallback(

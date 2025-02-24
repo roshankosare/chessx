@@ -31,6 +31,9 @@ export const useBoard = create<{
     whiteCapturedPieces: [],
     blackCapturedPieces: [],
     moveHistory: [],
+    promotionalMoves: [],
+    promotionPiece: null,
+    showPomotionWindow:false,
   },
 
   setBoardState: (key, value) =>
@@ -69,6 +72,9 @@ export const useBoard = create<{
         whiteCapturedPieces: [],
         blackCapturedPieces: [],
         moveHistory: [],
+        promotionalMoves: [],
+        promotionPiece: null,
+        showPomotionWindow: false,
       },
     })),
   setBoardStateValue: (values: Partial<BoardState>) =>

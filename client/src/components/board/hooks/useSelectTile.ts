@@ -21,7 +21,7 @@ export const useSelectTile = () => {
   const { getSocketValue } = useSocket();
 
   const selectSquare = useCallback(
-    (id: string, selected: boolean) => {
+    async (id: string, selected: boolean) => {
       const playingAs = getBoardStateValue("playingAS");
       const selectedPiece = getBoardStateValue("selectedPiece");
       const socket = getSocketValue();
@@ -46,13 +46,27 @@ export const useSelectTile = () => {
           });
 
           const move = getBoardStateValue("move");
+          const promotionalMoves = getBoardStateValue("promotionalMoves");
+
           if (move.from && move.to && socket) {
+            if (promotionalMoves.length > 0) {
+              if (
+                promotionalMoves.some((m) => m.includes(move.to || "jnsdjnsk"))
+              ) {
+                setBoardState("showPomotionWindow", true);
+                while (getBoardStateValue("showPomotionWindow")) {
+                  await new Promise((resolve) => setTimeout(resolve, 100)); // Wait 100ms before checking again
+                }
+              }
+            }
             const roomId = getBoardStateValue("roomId");
             const playingId = getBoardStateValue("playingId");
+            const promotionPiece = getBoardStateValue("promotionPiece");
             socket.emit("make-move", {
               from: move.from,
               to: move.to,
               roomId: roomId,
+              promotionPiece: promotionPiece,
               playerId: playingId,
             });
             setBoardStateValue({

@@ -179,7 +179,7 @@ export class GameManagerService {
   }
 
   makeMove(
-    move: { from: string; to: string },
+    move: { from: string; to: string; promotion?: string },
     player: string,
     roomId: string,
   ): 'gameover' | 'next' {
@@ -190,7 +190,11 @@ export class GameManagerService {
         throw new Error('invalid room Id');
       }
       if (room.playerWhite === player && room.turn === 'w') {
-        const moveResult = room.game.move({ from: move.from, to: move.to });
+        const moveResult = room.game.move({
+          from: move.from,
+          to: move.to,
+          promotion: move.promotion,
+        });
         if (room.game.isGameOver()) {
           this.setGameOverInfo(roomId);
           return 'gameover';
@@ -208,7 +212,7 @@ export class GameManagerService {
         return 'next';
       }
       if (room.playerBlack === player && room.turn === 'b') {
-        const moveResult = room.game.move({ from: move.from, to: move.to });
+        const moveResult = room.game.move({ from: move.from, to: move.to , promotion: move.promotion,});
 
         if (room.game.isGameOver()) {
           this.setGameOverInfo(roomId);
