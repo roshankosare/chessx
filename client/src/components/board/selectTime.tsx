@@ -18,7 +18,7 @@ const SelectTime: React.FC<SelectTimeProps> = ({ time, setTime }) => {
         ) : time === 3 ? (
           <img src="/thunder.svg" className="h-6 w-6" />
         ) : time == 5 ? (
-          <img src="/clock.svg" className="h-6 w-6 filter hue-rotate-[90deg]" />
+          <img src="/clock.svg" className="h-6 w-6 filter hue-rotate-[320deg]" />
         ) : (
           <img src="/clock.svg" className="h-6 w-6" />
         )}
@@ -56,7 +56,7 @@ const SelectTime: React.FC<SelectTimeProps> = ({ time, setTime }) => {
           >
             <img
               src="/clock.svg"
-              className="h-5 w-5 filter hue-rotate-[90deg]"
+              className="h-5 w-5 filter hue-rotate-[320deg]"
             />
             5 min
           </Button>

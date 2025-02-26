@@ -7,7 +7,7 @@ import { Chess } from 'chess.js';
 export class RoomManagerService {
   private rooms: GameRooms = {};
 
-  createRoom(time: GameTime): Room {
+  createRoom(time: GameTime, matchType: 'H' | 'M'): Room {
     const roomId = randomUUID().toString();
     this.rooms[roomId] = {
       playerWhite: null,
@@ -16,6 +16,7 @@ export class RoomManagerService {
       status: 'available',
       time: time,
       turn: 'w',
+      matchType: matchType,
       playerWhiteRemainingTime:
         time == 10
           ? 60 * 10 * 1000

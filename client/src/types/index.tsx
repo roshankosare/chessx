@@ -95,7 +95,7 @@ export type BoardStateValue = {
   moveHistory: [string, string][];
   promotionalMoves: string[];
   promotionPiece: string | null;
-  showPomotionWindow:boolean;
+  showPomotionWindow: boolean;
 }[BoardStateKey]; // This maps the BoardStateKey to its specific type
 
 export interface BoardState {
@@ -120,5 +120,5 @@ export interface BoardState {
   moveHistory: [string, string | null][];
   promotionalMoves: string[];
   promotionPiece: string | null;
-  showPomotionWindow:boolean;
+  showPomotionWindow: boolean;
 }

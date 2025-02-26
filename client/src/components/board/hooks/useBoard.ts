@@ -33,7 +33,7 @@ export const useBoard = create<{
     moveHistory: [],
     promotionalMoves: [],
     promotionPiece: null,
-    showPomotionWindow:false,
+    showPomotionWindow: false,
   },
 
   setBoardState: (key, value) =>

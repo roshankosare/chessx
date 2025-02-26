@@ -111,7 +111,7 @@ const GameNav = () => {
       ) : (
         <>
           <Button
-            className=" sm:w-[300px]  w-full h-[70px] sm:h-[80px] bg-green-800 flex shadow-sm shadow-white  gap-y-4  rounded-3xl"
+            className=" sm:w-[300px] hover:bg-green-700  w-full h-[70px] sm:h-[80px] bg-green-800 flex shadow-sm shadow-white  gap-y-4  rounded-3xl"
             onClick={() => {
               setShowGameSlection(true);
             }}
@@ -203,7 +203,7 @@ export const GameSlectionTab: React.FC<GameSlectionTabProps> = ({
         }}
       />
       <Button
-        className=" sm:w-[300px]  w-full h-[60px] bg-green-800 flex gap-y-4 shadow-sm shadow-white  rounded-xl"
+        className=" sm:w-[300px]  w-full h-[60px] hover:bg-green-700 bg-green-800 flex gap-y-4 shadow-sm shadow-white  rounded-xl"
         onClick={() => {
           setStart();
           startNewGame();

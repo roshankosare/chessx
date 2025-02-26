@@ -49,6 +49,7 @@ export const useGameSocketIo = () => {
         socket.emit("join-room", {
           id: data.socketId,
           time: gameTime,
+          opponent: "M",
         });
       }
     },
@@ -152,15 +153,15 @@ export const useGameSocketIo = () => {
   const handlePosMoves = useCallback(
     (data: { moves: [string] }) => {
       const playingAs = getBoardStateValue("playingAS");
-      console.log(data);
+      // console.log(data);
       const promotionalMoves: string[] = data.moves.map((move) => {
         return move[move.length - 1] === "+" || move[move.length - 1] === "#"
           ? move[move.length - 3] === "="
             ? move.slice(0, -3).slice(-2)
             : ""
           : move[move.length - 2] === "="
-          ? move.slice(0, -2).slice(-2)
-          : "";
+            ? move.slice(0, -2).slice(-2)
+            : "";
       });
       setBoardStateValue({ promotionalMoves: promotionalMoves });
       const moves = data.moves.map((move) => {
@@ -172,12 +173,12 @@ export const useGameSocketIo = () => {
               ? move.slice(0, -3).slice(-2) // string has + at last and promotion move
               : move.slice(0, -1).slice(-2) //string + but not promotion
             : move[move.length - 2] === "="
-            ? move.slice(0, -2).slice(-2) //string has no + but promotion move
-            : move.slice(-2) // string has no plus ans not promotion move
+              ? move.slice(0, -2).slice(-2) //string has no + but promotion move
+              : move.slice(-2) // string has no plus ans not promotion move
           : move.length > 2 &&
-            (move[move.length - 1] === "+" || move[move.length - 1] === "#")
-          ? move.slice(0, -1).slice(-2)// pawn move to check or checkmate without take
-          : move.slice(-2);
+              (move[move.length - 1] === "+" || move[move.length - 1] === "#")
+            ? move.slice(0, -1).slice(-2) // pawn move to check or checkmate without take
+            : move.slice(-2);
       });
       console.log(moves);
       if (moves.length > 0) setBoardState("possibleMoves", moves);
@@ -250,18 +251,18 @@ export const useGameSocketIo = () => {
             data.wins === "b"
               ? "blackWins"
               : data.wins === "w"
-              ? "whiteWins"
-              : data.wins === "d"
-              ? "draw"
-              : data.wins === "s"
-              ? "stalemate"
-              : "stalemate",
+                ? "whiteWins"
+                : data.wins === "d"
+                  ? "draw"
+                  : data.wins === "s"
+                    ? "stalemate"
+                    : "stalemate",
           wonBy:
             data.method === "checkmate"
               ? "checkmate"
               : data.method === "resignation"
-              ? "resignation"
-              : "timeout",
+                ? "resignation"
+                : "timeout",
         });
         deleteSocketConnection();
       }, 500);

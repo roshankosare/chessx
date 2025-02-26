@@ -34,17 +34,23 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('join-room')
   handleJoinRoom(
-    @MessageBody() data: { id: string; time: number },
+    @MessageBody() data: { id: string; time: number; opponent: 'H' | 'M' },
     @ConnectedSocket() client: Socket,
   ) {
     try {
       const id = data.id;
       const time = data.time;
+      const opponent: 'H' | 'M' = data.opponent;
 
-      if (!id && !time) {
+      if (!id && !time && !opponent) {
         return;
       }
-      const roomId = this.gameManagerService.joinRoom(id, time as GameTime);
+
+      const roomId = this.gameManagerService.joinRoom(
+        id,
+        time as GameTime,
+        opponent,
+      );
       if (roomId) {
         client.join(roomId);
         client.emit('room-joined', {
@@ -52,27 +58,29 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
           playerId: data.id,
         });
         if (this.gameManagerService.isGameReadyToStart(roomId)) {
-          this.io.to(roomId).emit('game-started');
-          this.gameManagerService.startWhiteTime(roomId);
-          const intervalId = setInterval(() => {
-            const room = this.gameManagerService.getGameInfo(roomId);
+          const room = this.gameManagerService.getGameInfo(roomId);
+          if (room.matchType === 'H') {
+            this.gameManagerService.startWhiteTime(roomId);
+            const intervalId = setInterval(() => {
+              const room = this.gameManagerService.getGameInfo(roomId);
 
-            this.io.to(roomId).emit('clock-update', {
-              whiteRemainigTime: room.playerWhiteRemainingTime,
-              blackRemainigTime: room.playerBlackRemainingTime,
-            });
-            if (room.playerWhiteRemainingTime <= 0) {
-              this.gameManagerService.setGameOverInfo(roomId);
-              this.io.to(roomId).emit('game-over');
-              clearInterval(intervalId);
-            }
-            if (room.playerBlackRemainingTime <= 0) {
-              this.gameManagerService.setGameOverInfo(roomId);
-              this.io.to(roomId).emit('game-over');
-              clearInterval(intervalId);
-            }
-          }, 1000);
-          return;
+              this.io.to(roomId).emit('clock-update', {
+                whiteRemainigTime: room.playerWhiteRemainingTime,
+                blackRemainigTime: room.playerBlackRemainingTime,
+              });
+              if (room.playerWhiteRemainingTime <= 0) {
+                this.gameManagerService.setGameOverInfo(roomId);
+                this.io.to(roomId).emit('game-over');
+                clearInterval(intervalId);
+              }
+              if (room.playerBlackRemainingTime <= 0) {
+                this.gameManagerService.setGameOverInfo(roomId);
+                this.io.to(roomId).emit('game-over');
+                clearInterval(intervalId);
+              }
+            }, 1000);
+          }
+          return this.io.to(roomId).emit('game-started');
         }
         return client.emit('waiting', { roomId: roomId, playerId: data.id });
       }
@@ -185,7 +193,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('make-move')
-  handleMakeMove(
+  async handleMakeMove(
     @MessageBody()
     data: {
       from: string;
@@ -209,15 +217,30 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return;
       }
 
-      const result = this.gameManagerService.makeMove(
+      const result = await this.gameManagerService.makeMove(
         { from: from, to: to, promotion: data.promotionPiece },
         playerId,
         roomId,
       );
 
       this.io.to(data.roomId).emit('refresh-game-status');
+
       if (result === 'gameover') {
         this.io.to(data.roomId).emit('game-over');
+      }
+      if (room.matchType === 'M') {
+        setTimeout(async () => {
+          const result = await this.gameManagerService.makeMove(
+            { from: '', to: '' },
+            'BOT',
+            roomId,
+          );
+
+          this.io.to(data.roomId).emit('refresh-game-status');
+          if (result === 'gameover') {
+            this.io.to(data.roomId).emit('game-over');
+          }
+        }, 700);
       }
       return;
     } catch (error) {

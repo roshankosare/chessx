@@ -2,13 +2,17 @@
   "name": "chessx",
   "version": "1.0.0",
   "main": "index.js",
-  "workspaces": ["client", "server"],
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "scripts": {
     "install:all": "npm install --workspaces",
     "build": "npm run build --workspaces",
-    "start": "concurrently \"npm run start --prefix server\" \"npm start --prefix client\"",
+    "start": "concurrently \"node --prefix stockfish\" \"npm run start --prefix server\" \"npm start --prefix client\"",
+    "start-stockfish": "node ./stockfish/app.js",
     "set-ip": "node set-local-ip.js",
-    "dev": "npm run set-ip && concurrently \"npm run start:dev --prefix server\" \"npm run dev --prefix client -- --host\""
+    "dev": "npm run set-ip && concurrently  \"node stockfish/app.js\" \"npm run start:dev --prefix server\" \"npm run dev --prefix client -- --host\""
   },
   "keywords": [],
   "author": "",
