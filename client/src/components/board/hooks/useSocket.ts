@@ -13,7 +13,7 @@ export const useSocket = create<{
 
   createSocketConnection: () => {
     if (!get().socket) {
-      const server: Socket = io(SOCKET_SERVER_URL);
+      const server: Socket = io(SOCKET_SERVER_URL+":5000");
       set(() => ({ socket: server })); // Function inside set prevents unnecessary re-renders
     }
   },

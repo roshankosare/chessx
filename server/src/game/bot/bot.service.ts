@@ -1,15 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { RoomManagerService } from '../roomManager/roomManager.service';
-import { Room } from '../roomManager/room.interface';
+import { DiLevel, Room } from '../roomManager/room.interface';
 import { Chess, Square } from 'chess.js';
 import axios from 'axios';
 import { Move } from 'chess.js';
+import { ConfigService } from '@nestjs/config';
+import { config } from 'process';
 
 @Injectable()
 export class BotService {
-  constructor(private readonly roomManagerService: RoomManagerService) {}
+  constructor(
+    private readonly roomManagerService: RoomManagerService,
+    private readonly configService: ConfigService,
+  ) {}
 
-  joinRoom(player: string): string | null {
+  joinRoom(player: string, dificultyLevel: DiLevel): string | null {
     const newRoom: Room = this.roomManagerService.createRoom(null, 'M');
 
     if (!newRoom) {
@@ -22,6 +27,7 @@ export class BotService {
       { roomId: newRoom.roomId },
       {
         status: 'full',
+        dificultyLevel: dificultyLevel || 10,
       },
     );
     return newRoom.roomId;
@@ -142,12 +148,15 @@ export class BotService {
       if (room.playerWhite === player && room.turn === 'w') {
         let moveResult: Move;
         if (room.playerWhite === 'BOT' && room.turn === 'w') {
-          const result = await axios.get('http://localhost:5123/bestmove', {
-            data: {
-              fen: room.game.fen(),
-              depth: 10,
+          const result = await axios.get(
+            `${this.configService.get<string>('VITE_SERVER_URL')}:5123/bestmove`,
+            {
+              data: {
+                fen: room.game.fen(),
+                depth: 20,
+              },
             },
-          });
+          );
           const botMove: string = result.data.bestMove.replace(/[\s]/g, '');
 
           const from = botMove.slice(0, 2);
@@ -187,7 +196,7 @@ export class BotService {
           const result = await axios.get('http://localhost:5123/bestmove', {
             data: {
               fen: room.game.fen(),
-              depth: 10,
+              depth: 20,
             },
           });
           const botMove: string = result.data.bestMove.replace(/[\s]/g, '');

@@ -1,10 +1,12 @@
 version: "3.8"
 
 services:
-  stockfish-api:
+  stockfish:
     build:
-      context: ./stockfish
-      dockerfile: Dockerfile
+      context: ./stockfish  # Path to the Dockerfile directory
+      dockerfile: Dockerfile  # Optional if the file is named 'Dockerfile'
+    volumes:
+      - ./stockfish:/app  # Sync changes for development
     ports:
-      - "5123:5000"
-    restart: unless-stopped
+      - "5123:5123"  # Expose API if needed
+    restart: unless-stopped  # Restart policy

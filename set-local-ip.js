@@ -20,10 +20,12 @@ try {
 console.log(`🌍 Local IP: ${ip}`);
 
 // Update .env file
-const envFilePath = "./client/.env.local";
-let envContent = `VITE_SERVER_URL=http://${ip}:5000\n`;
+const envFilePathClient = "./client/.env.local";
+const envFilePathServer = "./server/.env.local";
+let envContent = `VITE_SERVER_URL=http://${ip}\n`;
 
-fs.writeFileSync(envFilePath, envContent);
+fs.writeFileSync(envFilePathClient, envContent);
+fs.writeFileSync(envFilePathServer, envContent);
 console.log("✅ .env file updated!");
 
 // Done

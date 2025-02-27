@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { RoomManagerService } from '../roomManager/roomManager.service';
-import { GameTime, Room } from '../roomManager/room.interface';
+import { DiLevel, GameTime, Room } from '../roomManager/room.interface';
 import { Square } from 'chess.js';
 import { PlayerService } from '../player/player.service';
 import { BotService } from '../bot/bot.service';
@@ -13,10 +13,15 @@ export class GameManagerService {
     private readonly roomManagerService: RoomManagerService,
   ) {}
 
-  joinRoom(player: string, time: GameTime, oponent: 'H' | 'M'): string | null {
+  joinRoom(
+    player: string,
+    time: GameTime,
+    oponent: 'H' | 'M',
+    dificultyLevel: DiLevel,
+  ): string | null {
     return oponent === 'H'
       ? this.playerSerive.joinRoom(player, time)
-      : this.botSerive.joinRoom(player);
+      : this.botSerive.joinRoom(player, dificultyLevel);
   }
 
   getGameInfo(

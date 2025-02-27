@@ -2,6 +2,7 @@ import { Chess } from 'chess.js';
 
 export type GameTime = 1 | 3 | 5 | 10 | null;
 export type RoomStatus = 'available' | 'running' | 'full' | 'gameover';
+export type DiLevel =  10 | 15 | 20 | 25 | null;
 export interface Room {
   roomId: string;
   status: RoomStatus;
@@ -16,6 +17,7 @@ export interface Room {
   playerBlackRemainingTime: number | null;
   gameResult: 'w' | 'b' | 'd' | 's' | null;
   matchType: 'H' | 'M';
+  dificultyLevel:DiLevel;
   gameResultCause:
     | 'timeout'
     | 'checkmate'

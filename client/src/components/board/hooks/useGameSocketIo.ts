@@ -45,11 +45,13 @@ export const useGameSocketIo = () => {
         setBoardState("playingId", data.socketId);
         const socket = getSocketValue();
         if (!socket) return;
-
+        const op = getBoardStateValue("matchType");
+        const diLevel = getBoardStateValue("diLevel");
         socket.emit("join-room", {
           id: data.socketId,
           time: gameTime,
-          opponent: "M",
+          opponent:op ,
+          diLevel:op === "M"?diLevel:null
         });
       }
     },

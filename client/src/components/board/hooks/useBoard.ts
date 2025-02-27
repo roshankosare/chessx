@@ -34,6 +34,8 @@ export const useBoard = create<{
     promotionalMoves: [],
     promotionPiece: null,
     showPomotionWindow: false,
+    matchType: "H",
+    diLevel: 10,
   },
 
   setBoardState: (key, value) =>
@@ -75,6 +77,8 @@ export const useBoard = create<{
         promotionalMoves: [],
         promotionPiece: null,
         showPomotionWindow: false,
+        matchType: "H",
+        diLevel: 10,
       },
     })),
   setBoardStateValue: (values: Partial<BoardState>) =>

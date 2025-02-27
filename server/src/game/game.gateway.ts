@@ -10,7 +10,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { GameManagerService } from './gameManager/gameManager.service';
 import { Square } from 'chess.js';
-import { GameTime } from './roomManager/room.interface';
+import { DiLevel, GameTime } from './roomManager/room.interface';
 import { generateNumericID } from 'src/utils';
 
 @WebSocketGateway({
@@ -34,13 +34,20 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('join-room')
   handleJoinRoom(
-    @MessageBody() data: { id: string; time: number; opponent: 'H' | 'M' },
+    @MessageBody()
+    data: {
+      id: string;
+      time: number;
+      opponent: 'H' | 'M';
+      diLevel: DiLevel;
+    },
     @ConnectedSocket() client: Socket,
   ) {
     try {
       const id = data.id;
       const time = data.time;
       const opponent: 'H' | 'M' = data.opponent;
+      const diLevel = data.diLevel;
 
       if (!id && !time && !opponent) {
         return;
@@ -50,6 +57,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         id,
         time as GameTime,
         opponent,
+        diLevel,
       );
       if (roomId) {
         client.join(roomId);
@@ -80,6 +88,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
               }
             }, 1000);
           }
+
           return this.io.to(roomId).emit('game-started');
         }
         return client.emit('waiting', { roomId: roomId, playerId: data.id });
@@ -229,18 +238,16 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.io.to(data.roomId).emit('game-over');
       }
       if (room.matchType === 'M') {
-        setTimeout(async () => {
-          const result = await this.gameManagerService.makeMove(
-            { from: '', to: '' },
-            'BOT',
-            roomId,
-          );
+        const result = await this.gameManagerService.makeMove(
+          { from: '', to: '' },
+          'BOT',
+          roomId,
+        );
 
-          this.io.to(data.roomId).emit('refresh-game-status');
-          if (result === 'gameover') {
-            this.io.to(data.roomId).emit('game-over');
-          }
-        }, 700);
+        this.io.to(data.roomId).emit('refresh-game-status');
+        if (result === 'gameover') {
+          this.io.to(data.roomId).emit('game-over');
+        }
       }
       return;
     } catch (error) {

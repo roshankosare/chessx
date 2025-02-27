@@ -1,6 +1,6 @@
-FROM node:alpine
+FROM node:20-slim
 
-# Install Stockfish
+# Install Stockfish (Debian-based)
 RUN apt-get update && apt-get install -y stockfish
 
 # Set working directory
@@ -16,4 +16,4 @@ COPY . .
 EXPOSE 5000
 
 # Start the API
-CMD ["node", "app.js"]
+CMD ["npx","nodemon","--legacy-watch", "app.js"]

@@ -28,7 +28,7 @@ export type FixedLengthArray<T, N extends number> = N extends N
 type _FixedLengthArray<
   T,
   N extends number,
-  R extends unknown[]
+  R extends unknown[],
 > = R["length"] extends N ? R : _FixedLengthArray<T, N, [T, ...R]>;
 
 // Now restrict the length of pos
@@ -71,7 +71,9 @@ export type BoardStateKey =
   | "moveHistory"
   | "promotionalMoves"
   | "promotionPiece"
-  | "showPomotionWindow";
+  | "showPomotionWindow"
+  | "matchType"
+  | "diLevel";
 
 export type BoardStateValue = {
   gameTime: GameTime;
@@ -96,6 +98,8 @@ export type BoardStateValue = {
   promotionalMoves: string[];
   promotionPiece: string | null;
   showPomotionWindow: boolean;
+  matchType: "H" | "M";
+  diLevel: 10 | 15 | 20 | 25;
 }[BoardStateKey]; // This maps the BoardStateKey to its specific type
 
 export interface BoardState {
@@ -121,4 +125,6 @@ export interface BoardState {
   promotionalMoves: string[];
   promotionPiece: string | null;
   showPomotionWindow: boolean;
+  matchType: "H" | "M";
+  diLevel: 10 | 15 | 20 | 25 | null;
 }
