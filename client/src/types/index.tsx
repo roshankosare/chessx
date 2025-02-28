@@ -3,6 +3,7 @@ export interface TileInterface {
   id: string;
   piece: Piece | null;
   selected: boolean;
+  isLastMoveSquare: boolean;
 }
 
 export type PieceColor = "b" | "w";
@@ -73,7 +74,8 @@ export type BoardStateKey =
   | "promotionPiece"
   | "showPomotionWindow"
   | "matchType"
-  | "diLevel";
+  | "diLevel"
+  | "lastMove";
 
 export type BoardStateValue = {
   gameTime: GameTime;
@@ -100,6 +102,7 @@ export type BoardStateValue = {
   showPomotionWindow: boolean;
   matchType: "H" | "M";
   diLevel: 10 | 15 | 20 | 25;
+  lastMove: { from: string | null; to: string | null };
 }[BoardStateKey]; // This maps the BoardStateKey to its specific type
 
 export interface BoardState {
@@ -127,4 +130,5 @@ export interface BoardState {
   showPomotionWindow: boolean;
   matchType: "H" | "M";
   diLevel: 10 | 15 | 20 | 25 | null;
+  lastMove: { from: string | null; to: string | null };
 }

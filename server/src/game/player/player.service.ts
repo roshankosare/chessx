@@ -106,6 +106,7 @@ export class PlayerService {
       blackCapturedPieces: room.blackCapturedPieces,
       whiteCapturedPieces: room.whiteCapturedPieces,
       moveHistory: room.moveHistory,
+      lastMove: { from: room.lastFrom, to: room.lastTo },
     };
   }
   getPosMoves(player: string, roomId: string, square: Square): string[] | null {
@@ -209,6 +210,8 @@ export class PlayerService {
           to: move.to,
           promotion: move.promotion,
         });
+        room.lastFrom = moveResult.from;
+        room.lastTo = moveResult.to;
         if (room.game.isGameOver()) {
           this.setGameOverInfo(roomId);
           return 'gameover';
@@ -231,7 +234,9 @@ export class PlayerService {
           to: move.to,
           promotion: move.promotion,
         });
-
+        room.lastFrom = moveResult.from;
+        room.lastTo = moveResult.to;
+        
         if (room.game.isGameOver()) {
           this.setGameOverInfo(roomId);
           return 'gameover';

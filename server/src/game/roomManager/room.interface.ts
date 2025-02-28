@@ -29,6 +29,8 @@ export interface Room {
     | null;
 
   game: Chess;
+  lastFrom:string| null;
+  lastTo:string| null;
 }
 
 export interface GameRooms {

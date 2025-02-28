@@ -117,6 +117,7 @@ export class BotService {
       blackCapturedPieces: room.blackCapturedPieces,
       whiteCapturedPieces: room.whiteCapturedPieces,
       moveHistory: room.moveHistory,
+      lastMove: { from: room.lastFrom, to: room.lastTo },
     };
   }
   getPosMoves(player: string, roomId: string, square: Square): string[] | null {
@@ -200,19 +201,23 @@ export class BotService {
             to: to,
             // promotion: move.promotion,
           });
+          room.lastFrom = moveResult.from;
+          room.lastTo = moveResult.to;
         } else {
           moveResult = room.game.move({
             from: move.from,
             to: move.to,
             promotion: move.promotion,
           });
+          room.lastFrom = moveResult.from;
+          room.lastTo = moveResult.to;
         }
 
         if (room.game.isGameOver()) {
           this.setGameOverInfo(roomId);
           return 'gameover';
         }
-       
+
         room.moveHistory.push([
           moveResult.piece + (moveResult.captured ? 'x' : '') + moveResult.to,
           null,
@@ -243,12 +248,16 @@ export class BotService {
             to: to,
             // promotion: move.promotion,
           });
+          room.lastFrom = moveResult.from;
+          room.lastTo = moveResult.to;
         } else {
           moveResult = room.game.move({
             from: move.from,
             to: move.to,
             promotion: move.promotion,
           });
+          room.lastFrom = moveResult.from;
+          room.lastTo = moveResult.to;
         }
 
         if (room.game.isGameOver()) {

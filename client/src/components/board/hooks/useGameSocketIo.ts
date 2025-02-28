@@ -50,8 +50,8 @@ export const useGameSocketIo = () => {
         socket.emit("join-room", {
           id: data.socketId,
           time: gameTime,
-          opponent:op ,
-          diLevel:op === "M"?diLevel:null
+          opponent: op,
+          diLevel: op === "M" ? diLevel : null,
         });
       }
     },
@@ -137,12 +137,14 @@ export const useGameSocketIo = () => {
       whiteCapturedPieces: string[];
       blackCapturedPieces: string[];
       moveHistory: [];
+      lastMove: { from: string | null; to: string | null };
     }) => {
       const pos: BoardPos | null = getBoardPosition(data.gamePos);
       setBoardStateValue({
         whiteCapturedPieces: sortPiecesByPower(data.whiteCapturedPieces),
         blackCapturedPieces: sortPiecesByPower(data.blackCapturedPieces),
         moveHistory: data.moveHistory,
+        lastMove:{from:data.lastMove.from,to:data.lastMove.to}
       });
 
       // console.log(data);

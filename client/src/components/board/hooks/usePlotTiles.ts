@@ -4,19 +4,21 @@ import { useTiles } from "./useTiles";
 import { useShallow } from "zustand/shallow";
 
 export const usePlotTiles = () => {
-  const [reverseTiles, setPossibleMoves, setTiles] = useTiles(
+  const [reverseTiles, setPossibleMoves, setTiles, setLastMove] = useTiles(
     useShallow((state) => [
       state.reverseTiles,
       state.setPossibleMoves,
       state.setTiles,
+      state.setLastMove,
     ])
   );
 
-  const [playingAs, boardPos, possibleMoves] = useBoard(
+  const [playingAs, boardPos, possibleMoves, lastMove] = useBoard(
     useShallow((state) => [
       state.boardState.playingAS,
       state.boardState.boardPos,
       state.boardState.possibleMoves,
+      state.boardState.lastMove,
     ])
   );
 
@@ -37,4 +39,8 @@ export const usePlotTiles = () => {
       setTiles(boardPos);
     }
   }, [setTiles, boardPos]);
+
+  useEffect(() => {
+    if (lastMove.from && lastMove.to) setLastMove([lastMove.from, lastMove.to]);
+  }, [setLastMove, lastMove]);
 };

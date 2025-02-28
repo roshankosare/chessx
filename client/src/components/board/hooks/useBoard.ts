@@ -36,6 +36,7 @@ export const useBoard = create<{
     showPomotionWindow: false,
     matchType: "H",
     diLevel: 10,
+    lastMove: { from: null, to: null },
   },
 
   setBoardState: (key, value) =>
@@ -79,6 +80,7 @@ export const useBoard = create<{
         showPomotionWindow: false,
         matchType: "H",
         diLevel: 10,
+        lastMove: { from: null, to: null },
       },
     })),
   setBoardStateValue: (values: Partial<BoardState>) =>

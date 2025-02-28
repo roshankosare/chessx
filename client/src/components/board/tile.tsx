@@ -55,6 +55,9 @@ const Tile: React.FC<TileProps> = ({ index, selectSquare }) => {
   const id = useTiles((state) => state.tiles[index].id);
   const selected = useTiles((state) => state.tiles[index].selected);
   const color = useTiles((state) => state.tiles[index].color);
+  const isLastMoveSquare = useTiles(
+    (state) => state.tiles[index].isLastMoveSquare
+  );
 
   // console.log(`tile rerender with id ${id}`);
   return (
@@ -70,8 +73,9 @@ const Tile: React.FC<TileProps> = ({ index, selectSquare }) => {
       onMouseLeave={() => setIsHovered(false)}
       style={{
         background: color,
-        boxShadow:
-          isHovered || selected
+        boxShadow: isLastMoveSquare
+          ? "inset 0 0 16px 16px rgba(255, 255, 0, 0.6)"
+          : isHovered || selected
             ? "inset 0 0 16px 16px rgba(0, 0, 0, 0.4)"
             : "none",
       }}

@@ -125,7 +125,7 @@ const GameNav = () => {
           <Button
             className=" sm:w-[300px] hover:bg-green-700  w-full h-[70px] sm:h-[80px] bg-green-800 flex shadow-sm shadow-white  gap-y-4  rounded-3xl"
             onClick={() => {
-              setBoardStateValue({matchType:"H"})
+              setBoardStateValue({ matchType: "H" });
               setShowGameSelection(true);
             }}
           >

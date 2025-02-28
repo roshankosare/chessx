@@ -1,4 +1,4 @@
-import { BoardPos, ChessBoard, PlayingAS } from "@/types";
+import { BoardPos, ChessBoard, PlayingAS, TileInterface } from "@/types";
 import { create } from "zustand";
 
 interface TilesStore {
@@ -11,6 +11,7 @@ interface TilesStore {
   setTiles: (boardPos: BoardPos) => void;
   reverseTiles: () => void;
   resetTiles: () => void;
+  setLastMove: (move: string[]) => void;
 
   setPossibleMoves: (moves: string[]) => void;
 }
@@ -19,7 +20,6 @@ const generateTileId = (row: number, col: number): string => {
   const letters = "abcdefgh";
   return `${letters[col]}${rows - row}`;
 };
-
 
 export const useTiles = create<TilesStore>((set) => ({
   tiles: Array.from({ length: 64 }, (_, index) => {
@@ -32,7 +32,8 @@ export const useTiles = create<TilesStore>((set) => ({
       color: isBlack ? "#034F0B" : "#DEFBE1",
       piece: null, // Start with no pieces
       selected: false,
-    };
+      isLastMoveSquare: false,
+    } as TileInterface;
   }) as unknown as ChessBoard,
   selectPiece: (
     id: string,
@@ -100,7 +101,17 @@ export const useTiles = create<TilesStore>((set) => ({
           color: isBlack ? "#034F0B" : "#DEFBE1",
           piece: null, // Start with no pieces
           selected: false,
-        };
+          isLastMoveSquare: false,
+        } as TileInterface;
       }) as unknown as ChessBoard,
+    }),
+  setLastMove: (squares: string[]) =>
+    set((state) => {
+      const tiles = state.tiles;
+      tiles.forEach((tile) => {
+        tile.isLastMoveSquare = squares.includes(tile.id);
+      });
+
+      return { ...state, tiles };
     }),
 }));
