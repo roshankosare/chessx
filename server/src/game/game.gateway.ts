@@ -65,8 +65,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
           roomId: roomId,
           playerId: data.id,
         });
+
         if (this.gameManagerService.isGameReadyToStart(roomId)) {
           const room = this.gameManagerService.getGameInfo(roomId);
+
           if (room.matchType === 'H') {
             this.gameManagerService.startWhiteTime(roomId);
             const intervalId = setInterval(() => {
@@ -89,7 +91,25 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             }, 1000);
           }
 
-          return this.io.to(roomId).emit('game-started');
+          this.io.to(roomId).emit('game-started');
+
+          if (room.playerWhite === 'BOT') {
+            console.log('this runs');
+            // this.gameManagerService.makeMove(
+            //   { from: '', to: '' },
+            //   'BOT',
+            //   roomId,
+            // );
+            this.handleMakeMove({
+              from: '',
+              to: '',
+              promotionPiece: null,
+              playerId: 'BOT',
+              roomId: roomId,
+            });
+            return;
+          }
+          return;
         }
         return client.emit('waiting', { roomId: roomId, playerId: data.id });
       }
@@ -117,11 +137,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (room.playerWhite === playerId)
         client.emit('game-info', {
           user: {
-            username: 'guest' + generateNumericID(),
+            username: room.playerWhiteUsername,
             remainingTime: room.playerWhiteRemainingTime,
           },
           oponent: {
-            username: 'guest' + generateNumericID(),
+            username: room.playerBlackUsername,
             remainingTime: room.playerBlackRemainingTime,
           },
           playingAs: 'w',
@@ -130,11 +150,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (room.playerBlack === playerId)
         client.emit('game-info', {
           user: {
-            username: 'guest' + generateNumericID(),
+            username: room.playerBlackUsername,
             remainingTime: room.playerBlackRemainingTime,
           },
           oponent: {
-            username: 'guest' + generateNumericID(),
+            username: room.playerWhiteUsername,
             remainingTime: room.playerWhiteRemainingTime,
           },
           playingAs: 'b',

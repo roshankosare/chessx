@@ -40,6 +40,8 @@ export class RoomManagerService {
       blackCapturedPieces: [],
       moveHistory: [],
       dificultyLevel: null,
+      playerBlackUsername: null,
+      playerWhiteUsername: null,
     };
     return this.rooms[roomId];
   }
@@ -109,7 +111,9 @@ export class RoomManagerService {
         | 'playerWhiteRemainingTime'
         | 'turn'
         | 'status'
-        |'dificultyLevel'
+        | 'dificultyLevel'
+        |'playerBlackUsername'
+        |'playerWhiteUsername'
       >
     >,
   ): Room | null {

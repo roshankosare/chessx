@@ -6,6 +6,7 @@ import axios from 'axios';
 import { Move } from 'chess.js';
 import { ConfigService } from '@nestjs/config';
 import { config } from 'process';
+import { generateNumericID } from 'src/utils';
 
 @Injectable()
 export class BotService {
@@ -16,20 +17,47 @@ export class BotService {
 
   joinRoom(player: string, dificultyLevel: DiLevel): string | null {
     const newRoom: Room = this.roomManagerService.createRoom(null, 'M');
+    // console.log(newRoom)
 
     if (!newRoom) {
       throw new Error('failed to create new room');
     }
-    this.roomManagerService.addPlayerToRoom({ roomId: newRoom.roomId }, player);
-    this.roomManagerService.addPlayerToRoom({ roomId: newRoom.roomId }, 'BOT');
+    if (Math.random() < 0.5) {
+      this.roomManagerService.addPlayerToRoom(
+        { roomId: newRoom.roomId },
+        player,
+      );
+      this.roomManagerService.addPlayerToRoom(
+        { roomId: newRoom.roomId },
+        'BOT',
+      );
+    } else {
+      this.roomManagerService.addPlayerToRoom(
+        { roomId: newRoom.roomId },
+        'BOT',
+      );
+      this.roomManagerService.addPlayerToRoom(
+        { roomId: newRoom.roomId },
+        player,
+      );
+    }
 
     this.roomManagerService.updateRoomStatus(
       { roomId: newRoom.roomId },
       {
         status: 'full',
         dificultyLevel: dificultyLevel || 10,
+        playerBlackUsername:
+          newRoom.playerBlack === 'BOT'
+            ? 'Stockfish'
+            : 'guest' + generateNumericID(),
+        playerWhiteUsername:
+          newRoom.playerWhite === 'BOT'
+            ? 'Stockfish'
+            : 'guest' + generateNumericID(),
       },
     );
+    // console.log(newRoom);
     return newRoom.roomId;
   }
 
@@ -43,6 +71,8 @@ export class BotService {
     | 'gameResult'
     | 'gameResultCause'
     | 'matchType'
+    | 'playerBlackUsername'
+    | 'playerWhiteUsername'
   > | null {
     const data = this.roomManagerService.findRoom({ roomId: roomId });
     if (data)
@@ -53,6 +83,8 @@ export class BotService {
         gameResult: data.gameResult,
         gameResultCause: data.gameResultCause,
         matchType: data.matchType,
+        playerBlackUsername: data.playerBlackUsername,
+        playerWhiteUsername: data.playerBlackUsername,
       };
     return null;
   }
@@ -149,15 +181,17 @@ export class BotService {
         let moveResult: Move;
         if (room.playerWhite === 'BOT' && room.turn === 'w') {
           const result = await axios.get(
-            `${this.configService.get<string>('VITE_SERVER_URL')}:5123/bestmove`,
+            // `${this.configService.get<string>('VITE_SERVER_URL')}:5123/bestmove`,
+            `http://localhost:5123/bestmove`,
             {
               data: {
                 fen: room.game.fen(),
-                depth: 20,
+                depth: room.dificultyLevel,
               },
             },
           );
           const botMove: string = result.data.bestMove.replace(/[\s]/g, '');
+          // console.log(botMove)
 
           const from = botMove.slice(0, 2);
           const to = botMove.slice(-2);
@@ -178,6 +212,7 @@ export class BotService {
           this.setGameOverInfo(roomId);
           return 'gameover';
         }
+       
         room.moveHistory.push([
           moveResult.piece + (moveResult.captured ? 'x' : '') + moveResult.to,
           null,
@@ -196,7 +231,7 @@ export class BotService {
           const result = await axios.get('http://localhost:5123/bestmove', {
             data: {
               fen: room.game.fen(),
-              depth: 20,
+              depth: room.dificultyLevel,
             },
           });
           const botMove: string = result.data.bestMove.replace(/[\s]/g, '');

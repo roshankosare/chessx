@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { RoomManagerService } from '../roomManager/roomManager.service';
 import { GameTime, Room } from '../roomManager/room.interface';
 import { Chess, Square } from 'chess.js';
+import { generateNumericID } from 'src/utils';
 
 @Injectable()
 export class PlayerService {
@@ -19,6 +20,7 @@ export class PlayerService {
         { roomId: room.roomId },
         {
           status: 'full',
+          playerBlackUsername: 'guest' + generateNumericID(),
         },
       );
       return room.roomId;
@@ -30,6 +32,12 @@ export class PlayerService {
       throw new Error('failed to create new room');
     }
     this.roomManagerService.addPlayerToRoom({ roomId: newRoom.roomId }, player);
+    this.roomManagerService.updateRoomStatus(
+      { roomId: newRoom.roomId },
+      {
+        playerWhiteUsername: 'guest' + generateNumericID(),
+      },
+    );
     return newRoom.roomId;
   }
 
@@ -45,6 +53,8 @@ export class PlayerService {
     | 'gameResult'
     | 'gameResultCause'
     | 'matchType'
+    | 'playerBlackUsername'
+    | 'playerWhiteUsername'
   > | null {
     const data = this.roomManagerService.findRoom({ roomId: roomId });
     if (data)
@@ -57,6 +67,8 @@ export class PlayerService {
         gameResult: data.gameResult,
         gameResultCause: data.gameResultCause,
         matchType: data.matchType,
+        playerWhiteUsername: data.playerWhiteUsername,
+        playerBlackUsername: data.playerBlackUsername,
       };
     return null;
   }

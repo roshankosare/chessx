@@ -37,6 +37,8 @@ export class GameManagerService {
       | 'gameResult'
       | 'gameResultCause'
       | 'matchType'
+      |'playerBlackUsername'
+      |'playerWhiteUsername'
     >
   > | null {
     const data = this.roomManagerService.findRoom({ roomId: roomId });
