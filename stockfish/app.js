@@ -2,9 +2,12 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const { spawn } = require("child_process");
 const os = require("os");
+// require("dotenv").config();
 
 const app = express();
 app.use(bodyParser.json());
+
+
 
 function runStockfish(commands) {
     return new Promise((resolve, reject) => {
@@ -53,11 +56,14 @@ function runStockfish(commands) {
 }
 
 
+
+
 app.get("/bestmove", async (req, res) => {
     const { fen = "startpos", depth = 10 } = req.body;
 
 
     if (!fen) return res.status(400).json({ error: "FEN is required" });
+
 
     // Stockfish command to get the best move
     const commands = [
@@ -88,5 +94,7 @@ function parseBestMove(output) {
     return bestMoveLine ? bestMoveLine.split(" ")[1] : "No move found";
 }
 
+// Use HOST from .env or default to 0.0.0.0
 const PORT = process.env.PORT || 5123;
-app.listen(PORT, () => console.log(`Stockfish API running on port ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`Stockfish API running on port ${PORT}`));
+

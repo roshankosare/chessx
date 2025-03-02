@@ -7,6 +7,7 @@ import { Move } from 'chess.js';
 import { ConfigService } from '@nestjs/config';
 import { config } from 'process';
 import { generateNumericID } from 'src/utils';
+import { stockfishUrl } from 'src/const';
 
 @Injectable()
 export class BotService {
@@ -84,7 +85,7 @@ export class BotService {
         gameResultCause: data.gameResultCause,
         matchType: data.matchType,
         playerBlackUsername: data.playerBlackUsername,
-        playerWhiteUsername: data.playerBlackUsername,
+        playerWhiteUsername: data.playerWhiteUsername,
       };
     return null;
   }
@@ -181,25 +182,25 @@ export class BotService {
       if (room.playerWhite === player && room.turn === 'w') {
         let moveResult: Move;
         if (room.playerWhite === 'BOT' && room.turn === 'w') {
-          const result = await axios.get(
-            // `${this.configService.get<string>('VITE_SERVER_URL')}:5123/bestmove`,
-            `http://localhost:5123/bestmove`,
-            {
-              data: {
-                fen: room.game.fen(),
-                depth: room.dificultyLevel,
-              },
+          const result = await axios.get(stockfishUrl + '/bestmove', {
+            data: {
+              fen: room.game.fen(),
+              depth: room.dificultyLevel,
             },
-          );
+          });
           const botMove: string = result.data.bestMove.replace(/[\s]/g, '');
           // console.log(botMove)
 
           const from = botMove.slice(0, 2);
-          const to = botMove.slice(-2);
+          const to =
+            botMove.length > 4
+              ? botMove.slice(-3).slice(0, 2)
+              : botMove.slice(-2);
+          const promotionPiece = botMove.length > 4 ? botMove.slice(-1) : null;
           moveResult = room.game.move({
             from: from,
             to: to,
-            // promotion: move.promotion,
+            promotion: promotionPiece,
           });
           room.lastFrom = moveResult.from;
           room.lastTo = moveResult.to;
@@ -233,7 +234,7 @@ export class BotService {
       if (room.playerBlack === player && room.turn === 'b') {
         let moveResult: Move;
         if (room.playerBlack === 'BOT' && room.turn === 'b') {
-          const result = await axios.get('http://localhost:5123/bestmove', {
+          const result = await axios.get(stockfishUrl + '/bestmove', {
             data: {
               fen: room.game.fen(),
               depth: room.dificultyLevel,
@@ -242,11 +243,15 @@ export class BotService {
           const botMove: string = result.data.bestMove.replace(/[\s]/g, '');
 
           const from = botMove.slice(0, 2);
-          const to = botMove.slice(-2);
+          const to =
+            botMove.length > 4
+              ? botMove.slice(-3).slice(0, 2)
+              : botMove.slice(-2);
+          const promotionPiece = botMove.length > 4 ? botMove.slice(-1) : null;
           moveResult = room.game.move({
             from: from,
             to: to,
-            // promotion: move.promotion,
+            promotion: promotionPiece,
           });
           room.lastFrom = moveResult.from;
           room.lastTo = moveResult.to;

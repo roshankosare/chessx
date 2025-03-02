@@ -3,10 +3,43 @@ version: "3.8"
 services:
   stockfish:
     build:
-      context: ./stockfish  # Path to the Dockerfile directory
-      dockerfile: Dockerfile  # Optional if the file is named 'Dockerfile'
+      context: ./stockfish
+      dockerfile: Dockerfile
     volumes:
-      - ./stockfish:/app  # Sync changes for development
+      - ./stockfish:/app
     ports:
-      - "5123:5123"  # Expose API if needed
-    restart: unless-stopped  # Restart policy
+      - "5123:5123"  # Expose Stockfish API on host machine
+    restart: unless-stopped
+    networks:
+      - app_network
+
+  client:
+    build: ./client
+    container_name: client
+    restart: unless-stopped
+    depends_on:
+      - server
+    networks:
+      - app_network
+    ports:
+      - "0.0.0.0:80:80"
+
+  server:
+    build: ./server
+    container_name: server
+    restart: unless-stopped
+    networks:
+      - app_network
+    env_file:
+      - ./server/.env.local
+    environment:
+      - STOCKFISH_HOST=stockfish  # Use service name inside Docker
+      - STOCKFISH_PORT=5123
+    ports:
+      - "5000:5000"
+    extra_hosts:
+      - "localhost:host-gateway"  # Maps localhost inside the container to the host machine
+
+networks:
+  app_network:
+    driver: bridge

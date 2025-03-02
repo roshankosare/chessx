@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      envFilePath: ['.env.local', '.env'],
       isGlobal: true, // Makes config available everywhere without importing
     }),
     GameModule,

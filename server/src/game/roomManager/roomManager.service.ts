@@ -42,8 +42,8 @@ export class RoomManagerService {
       dificultyLevel: null,
       playerBlackUsername: null,
       playerWhiteUsername: null,
-      lastFrom:null,
-      lastTo:null
+      lastFrom: null,
+      lastTo: null,
     };
     return this.rooms[roomId];
   }

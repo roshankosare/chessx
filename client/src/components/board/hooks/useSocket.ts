@@ -1,8 +1,8 @@
+import { getServerUrl } from "@/lib/utils";
 import { io, Socket } from "socket.io-client";
 import { create } from "zustand";
 
-const SOCKET_SERVER_URL =
-  import.meta.env.VITE_SERVER_URL || "http://localhost:5000";
+const SOCKET_SERVER_URL = getServerUrl();
 
 export const useSocket = create<{
   socket: Socket | null;
@@ -14,7 +14,7 @@ export const useSocket = create<{
 
   createSocketConnection: () => {
     if (!get().socket) {
-      const server: Socket = io(SOCKET_SERVER_URL + ":5000");
+      const server: Socket = io(SOCKET_SERVER_URL);
       set(() => ({ socket: server })); // Function inside set prevents unnecessary re-renders
     }
   },

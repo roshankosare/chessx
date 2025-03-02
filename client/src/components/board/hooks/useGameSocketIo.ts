@@ -116,12 +116,12 @@ export const useGameSocketIo = () => {
         playersInfo: {
           user: {
             username: data.user.username,
-            remainingTime: data.user.remainingTime,
+            remainingTime: data.user.remainingTime || null,
             avatar: "",
           },
           opponent: {
             username: data.oponent.username,
-            remainingTime: data.oponent.remainingTime,
+            remainingTime: data.oponent.remainingTime || null,
             avatar: "",
           },
         },
@@ -144,7 +144,7 @@ export const useGameSocketIo = () => {
         whiteCapturedPieces: sortPiecesByPower(data.whiteCapturedPieces),
         blackCapturedPieces: sortPiecesByPower(data.blackCapturedPieces),
         moveHistory: data.moveHistory,
-        lastMove:{from:data.lastMove.from,to:data.lastMove.to}
+        lastMove: { from: data.lastMove.from, to: data.lastMove.to },
       });
 
       // console.log(data);
@@ -184,7 +184,6 @@ export const useGameSocketIo = () => {
             ? move.slice(0, -1).slice(-2) // pawn move to check or checkmate without take
             : move.slice(-2);
       });
-      console.log(moves);
       if (moves.length > 0) setBoardState("possibleMoves", moves);
     },
     [getBoardStateValue, setBoardState, setBoardStateValue]

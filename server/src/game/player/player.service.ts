@@ -236,7 +236,7 @@ export class PlayerService {
         });
         room.lastFrom = moveResult.from;
         room.lastTo = moveResult.to;
-        
+
         if (room.game.isGameOver()) {
           this.setGameOverInfo(roomId);
           return 'gameover';

@@ -74,7 +74,7 @@ const Tile: React.FC<TileProps> = ({ index, selectSquare }) => {
       style={{
         background: color,
         boxShadow: isLastMoveSquare
-          ? "inset 0 0 16px 16px rgba(255, 255, 0, 0.6)"
+          ? "inset 0 0 20px 20px rgba(255, 255, 0, 0.6)"
           : isHovered || selected
             ? "inset 0 0 16px 16px rgba(0, 0, 0, 0.4)"
             : "none",

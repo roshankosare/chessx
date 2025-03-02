@@ -11,7 +11,6 @@ import { Server, Socket } from 'socket.io';
 import { GameManagerService } from './gameManager/gameManager.service';
 import { Square } from 'chess.js';
 import { DiLevel, GameTime } from './roomManager/room.interface';
-import { generateNumericID } from 'src/utils';
 
 @WebSocketGateway({
   cors: {
@@ -24,12 +23,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   io: Server;
 
   handleConnection(client: Socket) {
-    console.log(`user connected with id: ${client.id}`);
+    // console.log(`user connected with id: ${client.id}`);
     client.emit('connected', { socketId: client.id });
   }
 
   handleDisconnect(client: Socket) {
-    console.log(`user disconnected with id: ${client.id}`);
+    // console.log(`user disconnected with id: ${client.id}`);
   }
 
   @SubscribeMessage('join-room')
@@ -94,19 +93,24 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
           this.io.to(roomId).emit('game-started');
 
           if (room.playerWhite === 'BOT') {
-            console.log('this runs');
             // this.gameManagerService.makeMove(
             //   { from: '', to: '' },
             //   'BOT',
             //   roomId,
             // );
-            this.handleMakeMove({
-              from: '',
-              to: '',
-              promotionPiece: null,
-              playerId: 'BOT',
-              roomId: roomId,
-            });
+            setTimeout(() => {
+              try {
+                this.handleMakeMove({
+                  from: '',
+                  to: '',
+                  promotionPiece: null,
+                  playerId: 'BOT',
+                  roomId: roomId,
+                });
+              } catch (error) {
+                console.log(error);
+              }
+            }, 300);
             return;
           }
           return;
@@ -247,7 +251,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return;
       }
 
-      const result = await this.gameManagerService.makeMove(
+      let result = await this.gameManagerService.makeMove(
         { from: from, to: to, promotion: data.promotionPiece },
         playerId,
         roomId,
@@ -256,19 +260,23 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.io.to(data.roomId).emit('refresh-game-status');
 
       if (result === 'gameover') {
-        this.io.to(data.roomId).emit('game-over');
+        return this.io.to(data.roomId).emit('game-over');
       }
+      let botMoveResult;
       if (room.matchType === 'M') {
-        const result = await this.gameManagerService.makeMove(
-          { from: '', to: '' },
-          'BOT',
-          roomId,
-        );
-
-        this.io.to(data.roomId).emit('refresh-game-status');
-        if (result === 'gameover') {
-          this.io.to(data.roomId).emit('game-over');
-        }
+        setTimeout(async () => {
+          try {
+            botMoveResult = await this.gameManagerService.makeMove(
+              { from: '', to: '' },
+              'BOT',
+              roomId,
+            );
+            this.io.to(data.roomId).emit('refresh-game-status');
+            if (botMoveResult == 'gameover') {
+              this.io.to(data.roomId).emit('game-over');
+            }
+          } catch (error) {}
+        }, 800);
       }
       return;
     } catch (error) {
