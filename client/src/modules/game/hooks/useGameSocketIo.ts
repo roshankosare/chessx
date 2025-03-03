@@ -157,6 +157,7 @@ export const useGameSocketIo = () => {
   const handlePosMoves = useCallback(
     (data: { moves: [string] }) => {
       const playingAs = getBoardStateValue("playingAS");
+      const selectedPiece = getBoardStateValue("selectedPiece");
       // console.log(data);
       const promotionalMoves: string[] = data.moves.map((move) => {
         return move[move.length - 1] === "+" || move[move.length - 1] === "#"
@@ -184,6 +185,9 @@ export const useGameSocketIo = () => {
             ? move.slice(0, -1).slice(-2) // pawn move to check or checkmate without take
             : move.slice(-2);
       });
+      if(selectedPiece){
+        moves.push(selectedPiece);
+      }
       if (moves.length > 0) setBoardState("possibleMoves", moves);
     },
     [getBoardStateValue, setBoardState, setBoardStateValue]

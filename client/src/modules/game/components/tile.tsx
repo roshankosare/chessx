@@ -1,8 +1,9 @@
-import React, { useState } from "react";;
+import React, { useState } from "react";
 import { useTilesStore } from "../stores/useTilesStore";
 
 export interface TileProps {
-  index: number;
+  // index: number;
+  square: string;
   selectSquare: (id: string, square: boolean) => void;
 }
 
@@ -48,21 +49,36 @@ const getPieceImage = (value: string): string => {
 
   return "";
 };
-const Tile: React.FC<TileProps> = ({ index, selectSquare }) => {
+const Tile: React.FC<TileProps> = ({ square, selectSquare }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const pieceColor = useTilesStore((state) => state.tiles[index].piece?.color);
-  const pieceType = useTilesStore((state) => state.tiles[index].piece?.type);
-  const id = useTilesStore((state) => state.tiles[index].id);
-  const selected = useTilesStore((state) => state.tiles[index].selected);
-  const color = useTilesStore((state) => state.tiles[index].color);
+  // const pieceColor = useTilesStore((state) => state.tiles[index].piece?.color);
+  // const pieceType = useTilesStore((state) => state.tiles[index].piece?.type);
+  // const id = useTilesStore((state) => state.tiles[index].id);
+  // const selected = useTilesStore((state) => state.tiles[index].selected);
+  // const color = useTilesStore((state) => state.tiles[index].color);
+  // const isLastMoveSquare = useTilesStore(
+  //   (state) => state.tiles[index].isLastMoveSquare
+  // );
+
+  const pieceColor = useTilesStore(
+    (state) => state.tiles.get(square)?.piece?.color
+  );
+  const pieceType = useTilesStore(
+    (state) => state.tiles.get(square)?.piece?.type
+  );
+  const id = useTilesStore((state) => state.tiles.get(square)?.id);
+  const selected = useTilesStore((state) => state.tiles.get(square)?.selected);
+  const color = useTilesStore((state) => state.tiles.get(square)?.color);
   const isLastMoveSquare = useTilesStore(
-    (state) => state.tiles[index].isLastMoveSquare
+    (state) => state.tiles.get(square)?.isLastMoveSquare
   );
 
   // console.log(`tile rerender with id ${id}`);
   return (
     <div
-      onClick={() => selectSquare(id, selected)}
+      onClick={() => {
+        if (id && selected != undefined) selectSquare(id, selected);
+      }}
       onMouseEnter={() => {
         if (pieceType && pieceColor) {
           setIsHovered(true);

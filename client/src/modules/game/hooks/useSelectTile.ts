@@ -34,7 +34,7 @@ export const useSelectTile = () => {
       }
 
       if (selectedPiece && selectedPiece != id) {
-        // if peace is already selected and slected square is not square which has piece then
+        // if piece is already selected and slected square is not square which has piece then
         // execute move from piece square to selected square
         if (selected) {
           setBoardStateValue({
@@ -42,7 +42,7 @@ export const useSelectTile = () => {
               from: selectedPiece,
               to: id,
             },
-            selectedPiece: null,
+            // selectedPiece: null,
           });
 
           const move = getBoardStateValue("move");

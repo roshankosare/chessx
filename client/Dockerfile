@@ -9,7 +9,7 @@ COPY package.json package-lock.json ./
 RUN rm -rf node_modules
 
 # Install all dependencies (including devDependencies)
-RUN npm ci --legacy-peer-deps
+RUN npm install
 
 # Copy the entire project after dependencies are installed
 COPY . .

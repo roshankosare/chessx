@@ -7,7 +7,7 @@ import NavBar from "./components/NavBar";
 
 function App() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [boardSize, setBoardSize] = useState<number>(500);
+  const [boardSize, setBoardSize] = useState<number>(300);
 
   const gameStarted = useBoardStore((state) => state.boardState.gameStarted);
   const waiting = useBoardStore((state) => state.boardState.waiting);
@@ -40,11 +40,11 @@ function App() {
   // console.log(boardState.selectedPiece);
 
   return (
-    <div className="w-full h-screen  overflow-x-scroll flex flex-col gap-y-5 bg-neutral-900 ">
+    <div className="w-full h-screen  overflow-x-scroll flex flex-col gap-y-2 bg-neutral-900 ">
       <NavBar />
       <div
         ref={containerRef}
-        className=" w-full h-auto sm:max-w-[1200px]  mx-auto sm:px-10  text-white flex  flex-col justify-center sm:flex-row gap-y-5 py-5 sm:gap-x-5"
+        className=" w-full h-auto sm:max-w-[1200px]  mx-auto sm:px-4 text-white flex  flex-col justify-center sm:flex-row gap-y-5 sm:gap-x-5"
       >
         {gameStarted ? (
           <GameWindow size={boardSize} />
