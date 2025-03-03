@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { useGameSocketIo } from "./useGameSocketIo";
 import { useSocket } from "./useSocket";
-import { useBoard } from "./useBoard";
+import { useBoardStore } from "../stores/useBoardStore";
 
 export const useGame = () => {
   const { socket, getSocketValue } = useSocket();
-  const getBoardStateValue = useBoard((state) => state.getBoardStateValue);
-  const gameStarted = useBoard((state) => state.boardState.gameStarted);
+  const getBoardStateValue = useBoardStore((state) => state.getBoardStateValue);
+  const gameStarted = useBoardStore((state) => state.boardState.gameStarted);
 
   const {
     handleConnected,

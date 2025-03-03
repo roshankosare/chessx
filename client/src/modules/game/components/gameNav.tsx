@@ -1,33 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { useBoard } from "./hooks/useBoard";
-import { Button } from "../ui/button";
+import { useBoardStore } from "../stores/useBoardStore";
+import { Button } from "../../../components/ui/button";
 import SelectTime from "./selectTime";
-import { GameTime } from "../../types";
+import { GameTime } from "../../../types";
 import GameOver from "./gameOver";
 import ResignGame from "./resignGame";
-import { useGameIo } from "./hooks/useGameIo";
-import { useGame } from "./hooks/useGame";
+import { useGameIo } from "../hooks/useGameIo";
+import { useGame } from "../hooks/useGame";
 import { ArrowLeftCircleIcon } from "lucide-react";
-import { Table, TableBody, TableCell, TableRow } from "../ui/table";
+import { Table, TableBody, TableCell, TableRow } from "../../../components/ui/table";
 import { getPieceImage } from "@/lib/chess";
 import SelectPromotionPiece from "./selectPromotionPiece";
 
 const GameNav = () => {
   const [openGameOverWindow, setOpenGameOverWindow] = useState<boolean>(false);
   const [openResignGame, setOpenResignGame] = useState<boolean>(false);
-  const gameStatus = useBoard((state) => state.boardState.gameStatus);
+  const gameStatus = useBoardStore((state) => state.boardState.gameStatus);
   const { startNewGame, resignGame } = useGameIo();
   const [showGameSelection, setShowGameSelection] = useState<boolean>(false);
   const [showBotGameSelection, setShowBotGameSelection] =
     useState<boolean>(false);
   const [start, setStart] = useState<boolean>(false);
-  const gameStarted = useBoard((state) => state.boardState.gameStarted);
-  const waiting = useBoard((state) => state.boardState.waiting);
-  const moveHistory = useBoard((state) => state.boardState.moveHistory);
-  const showPomotionWindow = useBoard(
+  const gameStarted = useBoardStore((state) => state.boardState.gameStarted);
+  const waiting = useBoardStore((state) => state.boardState.waiting);
+  const moveHistory = useBoardStore((state) => state.boardState.moveHistory);
+  const showPomotionWindow = useBoardStore(
     (state) => state.boardState.showPomotionWindow
   );
-  const setBoardStateValue = useBoard((state) => state.setBoardStateValue);
+  const setBoardStateValue = useBoardStore((state) => state.setBoardStateValue);
   useGame();
   useEffect(() => {
     if (gameStatus !== "ready") {
@@ -199,8 +199,8 @@ export const GameSelectionTab: React.FC<GameSlectionTabProps> = ({
   startNewGame,
   closeGameSelection,
 }) => {
-  const gameTime = useBoard((state) => state.boardState.gameTime);
-  const setBoardState = useBoard((state) => state.setBoardState);
+  const gameTime = useBoardStore((state) => state.boardState.gameTime);
+  const setBoardState = useBoardStore((state) => state.setBoardState);
   return (
     <div className="bg-zinc-800 px-5 py-5 flex flex-col gap-y-5 w-full h-full max-w-[400px]">
       <div className=" flex  justify-end w-full h-[40px]">
@@ -239,8 +239,8 @@ export const BotGameSelection: React.FC<BotGameSelectionTabProps> = ({
   startNewGame,
   closeBotGameSelection,
 }) => {
-  const diLevel = useBoard((state) => state.boardState.diLevel);
-  const setBoardStateValue = useBoard((state) => state.setBoardStateValue);
+  const diLevel = useBoardStore((state) => state.boardState.diLevel);
+  const setBoardStateValue = useBoardStore((state) => state.setBoardStateValue);
   const [showSelectDl, setShowSelectDl] = useState<boolean>(false);
   return (
     <div className="bg-zinc-800 px-5 py-5 flex flex-col gap-y-5 w-full h-full max-w-[400px]">

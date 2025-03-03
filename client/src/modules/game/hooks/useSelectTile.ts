@@ -1,19 +1,19 @@
 import { useShallow } from "zustand/shallow";
-import { useBoard } from "./useBoard";
+import { useBoardStore } from "../stores/useBoardStore";
 import { useSocket } from "./useSocket";
 import { useCallback } from "react";
-import { useTiles } from "./useTiles";
+import { useTilesStore } from "../stores/useTilesStore";
 import { useRenderCount } from "./useRenderCount";
 
 export const useSelectTile = () => {
-  const [getBoardStateValue, setBoardState, setBoardStateValue] = useBoard(
+  const [getBoardStateValue, setBoardState, setBoardStateValue] = useBoardStore(
     useShallow((state) => [
       state.getBoardStateValue,
       state.setBoardState,
       state.setBoardStateValue,
     ])
   );
-  const [selectPiece, setPossibleMoves] = useTiles(
+  const [selectPiece, setPossibleMoves] = useTilesStore(
     useShallow((state) => [state.selectPiece, state.setPossibleMoves])
   );
 

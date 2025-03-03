@@ -6,9 +6,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useBoard } from "./hooks/useBoard";
-import { Button } from "../ui/button";
-import { useTiles } from "./hooks/useTiles";
+import { useBoardStore } from "../stores/useBoardStore";
+import { Button } from "../../../components/ui/button";
+import { useTilesStore } from "../stores/useTilesStore";
 
 type GameOverProps = {
   openGameOverWindow: boolean;
@@ -23,14 +23,14 @@ const GameOver: React.FC<GameOverProps> = ({
   setStart,
   startNewGame,
 }) => {
-  const resetBoardState = useBoard((state) => state.resetBoardState);
+  const resetBoardState = useBoardStore((state) => state.resetBoardState);
 
-  const user = useBoard((state) => state.boardState.playersInfo.user);
-  const opponent = useBoard((state) => state.boardState.playersInfo.opponent);
-  const playingAs = useBoard((state) => state.boardState.playingAS);
-  const gameStatus = useBoard((state) => state.boardState.gameStatus);
-  const wonBy = useBoard((state) => state.boardState.wonBy);
-  const resetTiles = useTiles((state) => state.resetTiles);
+  const user = useBoardStore((state) => state.boardState.playersInfo.user);
+  const opponent = useBoardStore((state) => state.boardState.playersInfo.opponent);
+  const playingAs = useBoardStore((state) => state.boardState.playingAS);
+  const gameStatus = useBoardStore((state) => state.boardState.gameStatus);
+  const wonBy = useBoardStore((state) => state.boardState.wonBy);
+  const resetTiles = useTilesStore((state) => state.resetTiles);
   const playerWon =
     gameStatus === "whiteWins"
       ? "White Win"

@@ -1,6 +1,6 @@
 import { BoardPos, BoardPosElement, PieceColor, PieceType } from "@/types";
 import { useSocket } from "./useSocket";
-import { useBoard } from "./useBoard";
+import { useBoardStore } from "../stores/useBoardStore";
 import { useCallback } from "react";
 import { hasKeyOfType } from "@/lib/utils";
 import { sortPiecesByPower } from "@/lib/chess";
@@ -34,9 +34,9 @@ const getBoardPosition = (
 export const useGameSocketIo = () => {
   const { getSocketValue, deleteSocketConnection } = useSocket();
 
-  const setBoardState = useBoard((state) => state.setBoardState);
-  const setBoardStateValue = useBoard((state) => state.setBoardStateValue);
-  const getBoardStateValue = useBoard((state) => state.getBoardStateValue);
+  const setBoardState = useBoardStore((state) => state.setBoardState);
+  const setBoardStateValue = useBoardStore((state) => state.setBoardStateValue);
+  const getBoardStateValue = useBoardStore((state) => state.getBoardStateValue);
 
   const handleConnected = useCallback(
     (data: { socketId: string }) => {

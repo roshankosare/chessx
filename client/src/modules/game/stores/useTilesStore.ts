@@ -21,7 +21,7 @@ const generateTileId = (row: number, col: number): string => {
   return `${letters[col]}${rows - row}`;
 };
 
-export const useTiles = create<TilesStore>((set) => ({
+export const useTilesStore = create<TilesStore>((set) => ({
   tiles: Array.from({ length: 64 }, (_, index) => {
     const row = Math.floor(index / 8); // 8 columns
     const col = index % 8;

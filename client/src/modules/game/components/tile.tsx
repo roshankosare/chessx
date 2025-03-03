@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useTiles } from "./hooks/useTiles";
+import React, { useState } from "react";;
+import { useTilesStore } from "../stores/useTilesStore";
 
 export interface TileProps {
   index: number;
@@ -50,12 +50,12 @@ const getPieceImage = (value: string): string => {
 };
 const Tile: React.FC<TileProps> = ({ index, selectSquare }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const pieceColor = useTiles((state) => state.tiles[index].piece?.color);
-  const pieceType = useTiles((state) => state.tiles[index].piece?.type);
-  const id = useTiles((state) => state.tiles[index].id);
-  const selected = useTiles((state) => state.tiles[index].selected);
-  const color = useTiles((state) => state.tiles[index].color);
-  const isLastMoveSquare = useTiles(
+  const pieceColor = useTilesStore((state) => state.tiles[index].piece?.color);
+  const pieceType = useTilesStore((state) => state.tiles[index].piece?.type);
+  const id = useTilesStore((state) => state.tiles[index].id);
+  const selected = useTilesStore((state) => state.tiles[index].selected);
+  const color = useTilesStore((state) => state.tiles[index].color);
+  const isLastMoveSquare = useTilesStore(
     (state) => state.tiles[index].isLastMoveSquare
   );
 

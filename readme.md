@@ -48,4 +48,4 @@ docker-compose up --build
 #### In this method you dont have to install stockfish locally as i have created service for that in docker-compose file.
 
 
-![screenshot](/sample.png)
+![screenshot](/screenshots/sample.png)

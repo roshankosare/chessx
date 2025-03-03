@@ -1,7 +1,7 @@
 import { BoardState, BoardStateKey } from "@/types";
 import { create } from "zustand";
 
-export const useBoard = create<{
+export const useBoardStore = create<{
   boardState: BoardState;
   setBoardState: <K extends BoardStateKey>(
     key: K,

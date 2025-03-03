@@ -1,6 +1,6 @@
 import { Clock } from "lucide-react";
 import React from "react";
-import { useBoard } from "./hooks/useBoard";
+import { useBoardStore } from "../stores/useBoardStore";
 import { TakenPieces } from "./takenPiece";
 
 type PlayerInfoProps = {
@@ -13,14 +13,14 @@ const formatter = new Intl.NumberFormat("en-US", {
 });
 
 const PlayerInfo: React.FC<PlayerInfoProps> = ({ type }) => {
-  const user = useBoard((state) => state.boardState.playersInfo.user);
-  const opponent = useBoard((state) => state.boardState.playersInfo.opponent);
-  const playingAs = useBoard((state) => state.boardState.playingAS);
+  const user = useBoardStore((state) => state.boardState.playersInfo.user);
+  const opponent = useBoardStore((state) => state.boardState.playersInfo.opponent);
+  const playingAs = useBoardStore((state) => state.boardState.playingAS);
 
-  const blackCapturedPieces = useBoard(
+  const blackCapturedPieces = useBoardStore(
     (state) => state.boardState.blackCapturedPieces
   );
-  const whiteCapturedPieces = useBoard(
+  const whiteCapturedPieces = useBoardStore(
     (state) => state.boardState.whiteCapturedPieces
   );
   const username = type === "p" ? user.username : opponent.username;

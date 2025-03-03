@@ -1,6 +1,6 @@
 import React from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
-import { useBoard } from "./hooks/useBoard";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog";
+import { useBoardStore } from "../stores/useBoardStore";
 import { getPieceImage } from "@/lib/chess";
 
 type SelectPromotionPieceProps = {
@@ -11,8 +11,8 @@ type SelectPromotionPieceProps = {
 const SelectPromotionPiece: React.FC<SelectPromotionPieceProps> = ({
   show,
 }) => {
-  const playingAs = useBoard((state) => state.boardState.playingAS);
-  const setBoardStateValue = useBoard((state) => state.setBoardStateValue);
+  const playingAs = useBoardStore((state) => state.boardState.playingAS);
+  const setBoardStateValue = useBoardStore((state) => state.setBoardStateValue);
   return (
     <Dialog open={show} onOpenChange={() => close()}>
       <DialogContent className="sm:max-w-[425px] max-w-[250px] px-5 py-5 flex flex-col gap-y-4 rounded-md">

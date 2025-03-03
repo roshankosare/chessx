@@ -1,32 +1,24 @@
 import { useEffect } from "react";
-import { useBoard } from "./useBoard";
-import { useTiles } from "./useTiles";
+import { useBoardStore } from "../stores/useBoardStore";
+import { useTilesStore } from "../stores/useTilesStore";
 import { useShallow } from "zustand/shallow";
 
 export const usePlotTiles = () => {
-  const [reverseTiles, setPossibleMoves, setTiles, setLastMove] = useTiles(
+  const [setPossibleMoves, setTiles, setLastMove] = useTilesStore(
     useShallow((state) => [
-      state.reverseTiles,
       state.setPossibleMoves,
       state.setTiles,
       state.setLastMove,
     ])
   );
 
-  const [playingAs, boardPos, possibleMoves, lastMove] = useBoard(
+  const [boardPos, possibleMoves, lastMove] = useBoardStore(
     useShallow((state) => [
-      state.boardState.playingAS,
       state.boardState.boardPos,
       state.boardState.possibleMoves,
       state.boardState.lastMove,
     ])
   );
-
-  useEffect(() => {
-    if (playingAs == "b") {
-      reverseTiles();
-    }
-  }, [playingAs, reverseTiles]);
 
   useEffect(() => {
     if (possibleMoves.length > 0) {

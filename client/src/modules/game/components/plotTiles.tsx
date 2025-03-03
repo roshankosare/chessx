@@ -1,5 +1,5 @@
+import { useSelectTile } from "../hooks/useSelectTile";
 import Tile from "./tile";
-import { useSelectTile } from "./hooks/useSelectTile";
 
 const PlotTiles = () => {
   const { selectSquare } = useSelectTile();

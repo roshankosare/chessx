@@ -1,16 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
-import { useBoard } from "./components/board/hooks/useBoard";
-import GameNav from "./components/board/gameNav";
-import GameWindow from "./components/board/gameWindow";
-import NavBar from "./components/board/NavBar";
+import { useBoardStore } from "./modules/game/stores/useBoardStore";
+import GameNav from "./modules/game/components/gameNav";
+import GameWindow from "./modules/game/components/gameWindow";
+import NavBar from "./components/NavBar";
 
 function App() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [boardSize, setBoardSize] = useState<number>(500);
 
-  const gameStarted = useBoard((state) => state.boardState.gameStarted);
-  const waiting = useBoard((state) => state.boardState.waiting);
+  const gameStarted = useBoardStore((state) => state.boardState.gameStarted);
+  const waiting = useBoardStore((state) => state.boardState.waiting);
 
   useEffect(() => {
     const container = containerRef.current; // Capture the ref value in a variable

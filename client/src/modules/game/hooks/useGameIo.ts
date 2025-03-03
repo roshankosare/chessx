@@ -1,10 +1,10 @@
 import { useCallback } from "react";
 import { useSocket } from "./useSocket";
-import { useBoard } from "./useBoard";
+import { useBoardStore } from "../stores/useBoardStore";
 
 export const useGameIo = () => {
   const { createSocketConnection, getSocketValue } = useSocket();
-  const getBoardStateValue = useBoard((state) => state.getBoardStateValue);
+  const getBoardStateValue = useBoardStore((state) => state.getBoardStateValue);
 
   const startNewGame = useCallback(() => {
     createSocketConnection();
