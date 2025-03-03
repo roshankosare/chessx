@@ -93,11 +93,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
           this.io.to(roomId).emit('game-started');
 
           if (room.playerWhite === 'BOT') {
-            // this.gameManagerService.makeMove(
-            //   { from: '', to: '' },
-            //   'BOT',
-            //   roomId,
-            // );
             setTimeout(() => {
               try {
                 this.handleMakeMove({

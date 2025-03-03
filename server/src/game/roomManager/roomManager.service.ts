@@ -8,6 +8,7 @@ export class RoomManagerService {
   private rooms: GameRooms = {};
 
   createRoom(time: GameTime, matchType: 'H' | 'M'): Room {
+    const chess = new Chess();
     const roomId = randomUUID().toString();
     this.rooms[roomId] = {
       playerWhite: null,
@@ -33,7 +34,7 @@ export class RoomManagerService {
             : time == 3
               ? 60 * 3 * 1000
               : 60 * 1 * 1000,
-      game: new Chess(),
+      fen: chess.fen(),
       gameResult: null,
       gameResultCause: null,
       whiteCapturedPieces: [],
@@ -116,6 +117,9 @@ export class RoomManagerService {
         | 'dificultyLevel'
         | 'playerBlackUsername'
         | 'playerWhiteUsername'
+        | 'lastFrom'
+        | 'lastTo'
+        | 'fen'
       >
     >,
   ): Room | null {

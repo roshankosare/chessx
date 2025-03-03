@@ -4,16 +4,15 @@ import { DiLevel, Room } from '../roomManager/room.interface';
 import { Chess, Square } from 'chess.js';
 import axios from 'axios';
 import { Move } from 'chess.js';
-import { ConfigService } from '@nestjs/config';
-import { config } from 'process';
 import { generateNumericID } from 'src/utils';
 import { stockfishUrl } from 'src/const';
+import { ChessGameService } from '../chessGame/chessGame.service';
 
 @Injectable()
 export class BotService {
   constructor(
     private readonly roomManagerService: RoomManagerService,
-    private readonly configService: ConfigService,
+    private readonly chessGameService: ChessGameService,
   ) {}
 
   joinRoom(player: string, dificultyLevel: DiLevel): string | null {
@@ -109,7 +108,9 @@ export class BotService {
     if (!room) {
       return;
     }
-    const pos = room.game.board();
+    const game = this.chessGameService.getGame();
+    game.load(room.fen);
+    const pos = game.board();
     return {
       gamePos:
         room.playerWhite === player
@@ -128,7 +129,9 @@ export class BotService {
       if (!room) {
         return null;
       }
-      const presentPiece = room.game.get(square);
+      const game = this.chessGameService.getGame();
+      game.load(room.fen);
+      const presentPiece = game.get(square);
       if (!presentPiece) {
         // if peach is not present on the square then return null
         return null;
@@ -139,8 +142,8 @@ export class BotService {
         // if white player trying to get pos moves of black player and vice-cersa the return null;
         return;
       }
-      if (playingAs != (room.game.turn() === 'w' ? 'w' : 'b')) {
-        const chessCopy = new Chess(room.game.fen());
+      if (playingAs != (game.turn() === 'w' ? 'w' : 'b')) {
+        const chessCopy = new Chess(game.fen());
         // Set the turn on the copy to match the color of the piece on the square
         if (presentPiece.color !== chessCopy.turn()) {
           chessCopy.load(
@@ -152,7 +155,7 @@ export class BotService {
         const moves = chessCopy.moves({ square: square, verbose: false });
         return moves;
       }
-      const moves = room.game.moves({ square: square, verbose: false });
+      const moves = game.moves({ square: square, verbose: false });
 
       return moves;
     } catch (error) {
@@ -179,12 +182,14 @@ export class BotService {
       if (!room) {
         throw new Error('invalid room Id');
       }
+      const game = this.chessGameService.getGame();
+      game.load(room.fen);
       if (room.playerWhite === player && room.turn === 'w') {
         let moveResult: Move;
         if (room.playerWhite === 'BOT' && room.turn === 'w') {
           const result = await axios.get(stockfishUrl + '/bestmove', {
             data: {
-              fen: room.game.fen(),
+              fen: game.fen(),
               depth: room.dificultyLevel,
             },
           });
@@ -197,24 +202,38 @@ export class BotService {
               ? botMove.slice(-3).slice(0, 2)
               : botMove.slice(-2);
           const promotionPiece = botMove.length > 4 ? botMove.slice(-1) : null;
-          moveResult = room.game.move({
+          moveResult = game.move({
             from: from,
             to: to,
             promotion: promotionPiece,
           });
-          room.lastFrom = moveResult.from;
-          room.lastTo = moveResult.to;
+          this.roomManagerService.updateRoomStatus(
+            { roomId: roomId },
+            {
+              lastFrom: moveResult.from,
+              lastTo: moveResult.to,
+              fen: game.fen(),
+              turn: 'b',
+            },
+          );
         } else {
-          moveResult = room.game.move({
+          moveResult = game.move({
             from: move.from,
             to: move.to,
             promotion: move.promotion,
           });
-          room.lastFrom = moveResult.from;
-          room.lastTo = moveResult.to;
+          this.roomManagerService.updateRoomStatus(
+            { roomId: roomId },
+            {
+              lastFrom: moveResult.from,
+              lastTo: moveResult.to,
+              fen: game.fen(),
+              turn: 'b',
+            },
+          );
         }
 
-        if (room.game.isGameOver()) {
+        if (game.isGameOver()) {
           this.setGameOverInfo(roomId);
           return 'gameover';
         }
@@ -228,7 +247,6 @@ export class BotService {
           const capturedPiece = moveResult.captured;
           room.blackCapturedPieces.push(capturedPiece);
         }
-        room.turn = 'b';
         return 'next';
       }
       if (room.playerBlack === player && room.turn === 'b') {
@@ -236,7 +254,7 @@ export class BotService {
         if (room.playerBlack === 'BOT' && room.turn === 'b') {
           const result = await axios.get(stockfishUrl + '/bestmove', {
             data: {
-              fen: room.game.fen(),
+              fen: game.fen(),
               depth: room.dificultyLevel,
             },
           });
@@ -248,24 +266,38 @@ export class BotService {
               ? botMove.slice(-3).slice(0, 2)
               : botMove.slice(-2);
           const promotionPiece = botMove.length > 4 ? botMove.slice(-1) : null;
-          moveResult = room.game.move({
+          moveResult = game.move({
             from: from,
             to: to,
             promotion: promotionPiece,
           });
-          room.lastFrom = moveResult.from;
-          room.lastTo = moveResult.to;
+          this.roomManagerService.updateRoomStatus(
+            { roomId: roomId },
+            {
+              lastFrom: moveResult.from,
+              lastTo: moveResult.to,
+              fen: game.fen(),
+              turn: 'w',
+            },
+          );
         } else {
-          moveResult = room.game.move({
+          moveResult = game.move({
             from: move.from,
             to: move.to,
             promotion: move.promotion,
           });
-          room.lastFrom = moveResult.from;
-          room.lastTo = moveResult.to;
+          this.roomManagerService.updateRoomStatus(
+            { roomId: roomId },
+            {
+              lastFrom: moveResult.from,
+              lastTo: moveResult.to,
+              fen: game.fen(),
+              turn: 'w',
+            },
+          );
         }
 
-        if (room.game.isGameOver()) {
+        if (game.isGameOver()) {
           this.setGameOverInfo(roomId);
           return 'gameover';
         }
@@ -309,6 +341,8 @@ export class BotService {
     if (!room) {
       return 'invalidroom';
     }
+    const game = this.chessGameService.getGame();
+    game.load(room.fen);
 
     if (
       room.playerBlackRemainingTime <= 0 ||
@@ -319,19 +353,19 @@ export class BotService {
       return;
     }
 
-    if (room.game.isDraw()) {
+    if (game.isDraw()) {
       room.gameResult = 'd';
       room.gameResultCause = 'draw';
       return 'draw';
     }
-    if (room.game.isStalemate()) {
+    if (game.isStalemate()) {
       room.gameResult = 's';
       room.gameResultCause = 'stealmate';
       return 'stalemate';
     }
-    if (room.game.isGameOver()) {
-      if (room.game.isCheckmate()) {
-        const playerWin = room.game.turn();
+    if (game.isGameOver()) {
+      if (game.isCheckmate()) {
+        const playerWin = game.turn();
         room.gameResult = playerWin === 'w' ? 'b' : 'w';
         room.gameResultCause = 'checkmate';
         return;

@@ -3,10 +3,14 @@ import { RoomManagerService } from '../roomManager/roomManager.service';
 import { GameTime, Room } from '../roomManager/room.interface';
 import { Chess, Square } from 'chess.js';
 import { generateNumericID } from 'src/utils';
+import { ChessGameService } from '../chessGame/chessGame.service';
 
 @Injectable()
 export class PlayerService {
-  constructor(private readonly roomManagerService: RoomManagerService) {}
+  constructor(
+    private readonly roomManagerService: RoomManagerService,
+    private readonly chessGameService: ChessGameService,
+  ) {}
 
   joinRoom(player: string, time: GameTime): string | null {
     const room: Room = this.roomManagerService.findAvailabelRoom({
@@ -97,7 +101,9 @@ export class PlayerService {
     if (!room) {
       return;
     }
-    const pos = room.game.board();
+    const game = this.chessGameService.getGame();
+    game.load(room.fen);
+    const pos = game.board();
     return {
       gamePos:
         room.playerWhite === player
@@ -116,7 +122,9 @@ export class PlayerService {
       if (!room) {
         return null;
       }
-      const presentPiece = room.game.get(square);
+      const game = this.chessGameService.getGame();
+      game.load(room.fen);
+      const presentPiece = game.get(square);
       if (!presentPiece) {
         // if peach is not present on the square then return null
         return null;
@@ -127,8 +135,8 @@ export class PlayerService {
         // if white player trying to get pos moves of black player and vice-cersa the return null;
         return;
       }
-      if (playingAs != (room.game.turn() === 'w' ? 'w' : 'b')) {
-        const chessCopy = new Chess(room.game.fen());
+      if (playingAs != (game.turn() === 'w' ? 'w' : 'b')) {
+        const chessCopy = new Chess(game.fen());
         // Set the turn on the copy to match the color of the piece on the square
         if (presentPiece.color !== chessCopy.turn()) {
           chessCopy.load(
@@ -140,7 +148,7 @@ export class PlayerService {
         const moves = chessCopy.moves({ square: square, verbose: false });
         return moves;
       }
-      const moves = room.game.moves({ square: square, verbose: false });
+      const moves = game.moves({ square: square, verbose: false });
 
       return moves;
     } catch (error) {
@@ -204,15 +212,25 @@ export class PlayerService {
       if (!room) {
         throw new Error('invalid room Id');
       }
+      const game = this.chessGameService.getGame();
+      game.load(room.fen);
       if (room.playerWhite === player && room.turn === 'w') {
-        const moveResult = room.game.move({
+        const moveResult = game.move({
           from: move.from,
           to: move.to,
           promotion: move.promotion,
         });
-        room.lastFrom = moveResult.from;
-        room.lastTo = moveResult.to;
-        if (room.game.isGameOver()) {
+        this.roomManagerService.updateRoomStatus(
+          { roomId: roomId },
+          {
+            lastFrom: moveResult.from,
+            lastTo: moveResult.to,
+            fen: game.fen(),
+            turn: 'b',
+          },
+        );
+
+        if (game.isGameOver()) {
           this.setGameOverInfo(roomId);
           return 'gameover';
         }
@@ -225,19 +243,25 @@ export class PlayerService {
           const capturedPiece = moveResult.captured;
           room.blackCapturedPieces.push(capturedPiece);
         }
-        room.turn = 'b';
         return 'next';
       }
       if (room.playerBlack === player && room.turn === 'b') {
-        const moveResult = room.game.move({
+        const moveResult = game.move({
           from: move.from,
           to: move.to,
           promotion: move.promotion,
         });
-        room.lastFrom = moveResult.from;
-        room.lastTo = moveResult.to;
+        this.roomManagerService.updateRoomStatus(
+          { roomId: roomId },
+          {
+            lastFrom: moveResult.from,
+            lastTo: moveResult.to,
+            fen: game.fen(),
+            turn: 'w',
+          },
+        );
 
-        if (room.game.isGameOver()) {
+        if (game.isGameOver()) {
           this.setGameOverInfo(roomId);
           return 'gameover';
         }
@@ -248,7 +272,7 @@ export class PlayerService {
           const capturedPiece = moveResult.captured;
           room.whiteCapturedPieces.push(capturedPiece);
         }
-        room.turn = 'w';
+
         this.startWhiteTime(room.roomId);
         return 'next';
       }
@@ -290,20 +314,21 @@ export class PlayerService {
       room.gameResultCause = 'timeout';
       return;
     }
-
-    if (room.game.isDraw()) {
+    const game = this.chessGameService.getGame();
+    game.load(room.fen);
+    if (game.isDraw()) {
       room.gameResult = 'd';
       room.gameResultCause = 'draw';
       return 'draw';
     }
-    if (room.game.isStalemate()) {
+    if (game.isStalemate()) {
       room.gameResult = 's';
       room.gameResultCause = 'stealmate';
       return 'stalemate';
     }
-    if (room.game.isGameOver()) {
-      if (room.game.isCheckmate()) {
-        const playerWin = room.game.turn();
+    if (game.isGameOver()) {
+      if (game.isCheckmate()) {
+        const playerWin = game.turn();
         room.gameResult = playerWin === 'w' ? 'b' : 'w';
         room.gameResultCause = 'checkmate';
         return;

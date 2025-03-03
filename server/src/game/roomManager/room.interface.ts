@@ -28,7 +28,7 @@ export interface Room {
     | 'resignation'
     | null;
 
-  game: Chess;
+  fen: string;
   lastFrom: string | null;
   lastTo: string | null;
 }
