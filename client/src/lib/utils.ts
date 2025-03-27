@@ -19,7 +19,9 @@ export const getServerUrl = () => {
   if (window.location.hostname === "localhost") {
     return "http://localhost:5000";
   } else {
-    return `http://${window.location.hostname}:5000`;
+    const server_url = import.meta.env.VITE_SERVER_URL;
+    console.log(server_url);
+    return server_url ? server_url : `http://${window.location.hostname}:5000`;
   }
 };
 
