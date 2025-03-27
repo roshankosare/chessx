@@ -8,6 +8,6 @@ async function bootstrap() {
     origin: '*',
   });
   console.log(`app is running on port: ${process.env.PORT}`);
-  await app.listen(process.env.PORT ?? 5000, '0.0.0.0');
+  await app.listen(process.env.PORT ?? 5000);
 }
 bootstrap();
