@@ -29,9 +29,7 @@ npm run dev
 
 # Run production
 
-npm run build   // wait until all build complete
-
-npm run start
+npm run start   // access app on http://localhost:3000
 
 
 ```

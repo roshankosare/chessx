@@ -185,7 +185,7 @@ export const useGameSocketIo = () => {
             ? move.slice(0, -1).slice(-2) // pawn move to check or checkmate without take
             : move.slice(-2);
       });
-      if(selectedPiece){
+      if (selectedPiece) {
         moves.push(selectedPiece);
       }
       if (moves.length > 0) setBoardState("possibleMoves", moves);
