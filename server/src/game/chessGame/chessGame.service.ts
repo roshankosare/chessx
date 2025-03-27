@@ -8,5 +8,4 @@ export class ChessGameService {
   getGame() {
     return this.game;
   }
-  
 }

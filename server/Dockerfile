@@ -25,7 +25,7 @@ COPY package.json package-lock.json ./
 RUN npm install --production
 
 # Expose server port
-EXPOSE 80
+EXPOSE 8080
 
 # Start the server
 CMD ["node", "dist/main"]
