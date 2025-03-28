@@ -9,6 +9,7 @@ export const useSocket = create<{
   createSocketConnection: () => void;
   deleteSocketConnection: () => void;
   getSocketValue: () => Socket | null;
+  setSocketValue: (socket: Socket) => void;
 }>((set, get) => ({
   socket: null,
 
@@ -27,4 +28,8 @@ export const useSocket = create<{
     }
   },
   getSocketValue: () => get().socket,
+  setSocketValue: (socket: Socket) =>
+    set({
+      socket: socket,
+    }),
 }));

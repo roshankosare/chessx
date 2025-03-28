@@ -52,10 +52,13 @@ export type GameStatus =
   | "stalemate"
   | "ready";
 
+  export type MoveHistory = [string, string][];
+
 export type WonBy = "checkmate" | "timeout" | "resignation";
 export type BoardStateKey =
   | "gameTime"
   | "waiting"
+  |"start"
   | "gameStarted"
   | "playingId"
   | "roomId"
@@ -80,6 +83,7 @@ export type BoardStateKey =
 export type BoardStateValue = {
   gameTime: GameTime;
   waiting: boolean;
+  start:boolean;
   gameStarted: boolean;
   playingId: string | null;
   roomId: string | null;
@@ -96,7 +100,7 @@ export type BoardStateValue = {
   possibleMoves: string[];
   whiteCapturedPieces: string[];
   blackCapturedPieces: string[];
-  moveHistory: [string, string][];
+  moveHistory: MoveHistory;
   promotionalMoves: string[];
   promotionPiece: string | null;
   showPomotionWindow: boolean;
@@ -108,6 +112,7 @@ export type BoardStateValue = {
 export interface BoardState {
   gameTime: GameTime;
   waiting: boolean;
+  start:boolean;
   gameStarted: boolean;
   playingId: string | null;
   roomId: string | null;
@@ -124,7 +129,7 @@ export interface BoardState {
   possibleMoves: string[];
   whiteCapturedPieces: string[];
   blackCapturedPieces: string[];
-  moveHistory: [string, string | null][];
+  moveHistory: MoveHistory;
   promotionalMoves: string[];
   promotionPiece: string | null;
   showPomotionWindow: boolean;

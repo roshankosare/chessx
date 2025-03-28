@@ -23,12 +23,42 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   io: Server;
 
   handleConnection(client: Socket) {
-    // console.log(`user connected with id: ${client.id}`);
+    try {
+      if (client.handshake.auth.socketId && client.handshake.auth.roomId) {
+        const roomId = client.handshake.auth.roomId;
+        const socketId = client.handshake.auth.socketId;
+        const room = this.gameManagerService.getGameInfo(roomId);
+        if (!room || room.gameResult) {
+          client.emit('game-not-found');
+          return;
+        }
+        console.log(room.playerBlack === socketId);
+        console.log(room.playerWhite === socketId);
+
+        this.io.sockets.sockets.get(socketId)?.disconnect(true);
+        this.gameManagerService.updataGame(roomId, {
+          playerBlack:
+            room.playerBlack === socketId ? client.id : room.playerBlack,
+          playerWhite:
+            room.playerWhite === socketId ? client.id : room.playerWhite,
+        });
+
+        console.log(`user Reconnected with id: ${client.id}`);
+        client.join(roomId);
+        client.emit('reconnection', {
+          socketId: client.id,
+        });
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    console.log(`user connected with id: ${client.id}`);
     client.emit('connected', { socketId: client.id });
   }
 
   handleDisconnect(client: Socket) {
-    // console.log(`user disconnected with id: ${client.id}`);
+    console.log(`user disconnected with id: ${client.id}`);
   }
 
   @SubscribeMessage('join-room')

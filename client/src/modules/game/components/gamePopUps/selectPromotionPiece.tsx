@@ -1,6 +1,6 @@
 import React from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog";
-import { useBoardStore } from "../stores/useBoardStore";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../../components/ui/dialog";
+import { useBoardStore } from "../../stores/useBoardStore";
 import { getPieceImage } from "@/lib/chess";
 
 type SelectPromotionPieceProps = {

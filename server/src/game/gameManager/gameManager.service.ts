@@ -52,7 +52,11 @@ export class GameManagerService {
     updateGameParams: Partial<
       Pick<
         Room,
-        'turn' | 'playerBlackRemainingTime' | 'playerWhiteRemainingTime'
+        | 'turn'
+        | 'playerBlackRemainingTime'
+        | 'playerWhiteRemainingTime'
+        | 'playerBlack'
+        | 'playerWhite'
       >
     >,
   ): boolean {

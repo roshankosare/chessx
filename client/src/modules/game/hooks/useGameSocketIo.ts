@@ -272,6 +272,7 @@ export const useGameSocketIo = () => {
                 : "timeout",
         });
         deleteSocketConnection();
+        localStorage.removeItem("boardState");
       }, 500);
     },
     [setBoardStateValue, deleteSocketConnection]

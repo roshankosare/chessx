@@ -13,6 +13,7 @@ export const useBoardStore = create<{
 }>((set, get) => ({
   boardState: {
     gameTime: 3,
+    start:false,
     waiting: false,
     gameStarted: false,
     playingId: null,
@@ -58,6 +59,7 @@ export const useBoardStore = create<{
       boardState: {
         gameTime: state.boardState.gameTime,
         waiting: false,
+        start: false,
         gameStarted: false,
         playingId: null,
         roomId: null,
