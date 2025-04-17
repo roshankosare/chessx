@@ -4,7 +4,7 @@ import { useBoardStore } from "./modules/game/stores/useBoardStore";
 import GameNav from "./modules/game/components/gameNav/gameNav";
 import GameWindow from "./modules/game/components/gameWindow";
 import NavBar from "./components/NavBar";
-import LocalStorage from "./modules/game/components/localStorage";
+
 
 function App() {
   const containerRef = useRef<HTMLDivElement>(null);
