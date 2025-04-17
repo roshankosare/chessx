@@ -17,7 +17,6 @@ export const useLocalStorage = () => {
   useEffect(() => {
     // localStorage.removeItem("boardState");
     const result = localStorage.getItem("boardState");
-    console.log("localstate:", result);
     if (result) {
       const localState: BoardState = JSON.parse(result);
 
@@ -102,7 +101,6 @@ export const useLocalStorage = () => {
           auth: { socketId: socketId, roomId: roomId }, // Send the stored socketId
           reconnection: true, // Enable auto-reconnection
         });
-        console.log(newSocket);
         newSocket.on("game-not-found", () => {
           newSocket.disconnect();
           newSocket.close();
