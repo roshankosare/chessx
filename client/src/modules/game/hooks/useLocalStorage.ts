@@ -17,13 +17,17 @@ export const useLocalStorage = () => {
   useEffect(() => {
     // localStorage.removeItem("boardState");
     const result = localStorage.getItem("boardState");
+
     if (result) {
       const localState: BoardState = JSON.parse(result);
-
+      if (localState.start) {
+        return;
+      }
       setBoardStateValue(localState);
     }
     setlocalStateLoaded(true);
   }, [setBoardStateValue]);
+
   useEffect(() => {
     if (localStateLoaded) {
       localStorage.setItem(
@@ -86,6 +90,7 @@ export const useLocalStorage = () => {
 
   useEffect(() => {
     const socket = getSocketValue();
+    console.log(socket);
 
     if (!socket) {
       if (
@@ -101,6 +106,7 @@ export const useLocalStorage = () => {
           auth: { socketId: socketId, roomId: roomId }, // Send the stored socketId
           reconnection: true, // Enable auto-reconnection
         });
+        console.log(newSocket);
         newSocket.on("game-not-found", () => {
           newSocket.disconnect();
           newSocket.close();

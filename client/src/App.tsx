@@ -43,7 +43,7 @@ function App() {
   return (
     <div className="w-full h-screen  overflow-x-scroll flex flex-col gap-y-2 bg-neutral-900 ">
       <NavBar />
-      <LocalStorage />
+      {/* <LocalStorage /> */}
       <div
         ref={containerRef}
         className=" w-full h-auto sm:max-w-[1200px]  mx-auto sm:px-4 text-white flex  flex-col justify-center sm:flex-row gap-y-5 sm:gap-x-5"
