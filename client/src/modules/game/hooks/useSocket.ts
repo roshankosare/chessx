@@ -7,6 +7,7 @@ const SOCKET_SERVER_URL = getServerUrl();
 export const useSocket = create<{
   socket: Socket | null;
   createSocketConnection: () => void;
+  reconnect:(socketId:string,roomId:string)=>void;
   deleteSocketConnection: () => void;
   getSocketValue: () => Socket | null;
   setSocketValue: (socket: Socket) => void;
@@ -19,6 +20,19 @@ export const useSocket = create<{
       set(() => ({ socket: server })); // Function inside set prevents unnecessary re-renders
     }
   },
+  reconnect:(socketId:string,roomId:string)=>{
+    if (!get().socket) {
+      const server: Socket =  io(SOCKET_SERVER_URL, {
+        auth: { socketId: socketId, roomId: roomId }, // Send the stored socketId
+        reconnection: true, // Enable auto-reconnection
+      });
+      set(() => ({ socket: server })); // Function inside set prevents unnecessary re-renders
+    }
+
+   
+
+  },
+
 
   deleteSocketConnection: () => {
     const socket = get().socket;

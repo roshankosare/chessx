@@ -20,6 +20,8 @@ export const useGame = () => {
     handleClockUpdate,
     handleGameOver,
     handleGameOverInfo,
+    handleReconnection,
+    handleGameNotFound,
   } = useGameSocketIo();
 
   useEffect(() => {
@@ -35,6 +37,8 @@ export const useGame = () => {
     socket.on("clock-update", handleClockUpdate);
     socket.on("game-over", handleGameOver);
     socket.on("game-over-info", handleGameOverInfo);
+    socket.on("reconnection", handleReconnection);
+    socket.on("game-not-found", handleGameNotFound);
 
     return () => {
       // deleteSocketConnection();
@@ -50,6 +54,8 @@ export const useGame = () => {
       socket.off("clock-update");
       socket.off("game-over");
       socket.off("game-over-info");
+      socket.off("reconnection");
+      socket.off("game-not-found")
     };
   }, [
     socket,
@@ -64,6 +70,8 @@ export const useGame = () => {
     handleClockUpdate,
     handleGameOver,
     handleGameOverInfo,
+    handleGameNotFound,
+    handleReconnection
   ]);
 
   useEffect(() => {

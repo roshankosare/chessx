@@ -42,6 +42,7 @@ export class GameManagerService {
     >
   > | null {
     const data = this.roomManagerService.findRoom({ roomId: roomId });
+    if(!data){return null}
     return data.matchType === 'H'
       ? this.playerSerive.getGameInfo(roomId)
       : this.botSerive.getGameInfo(roomId);

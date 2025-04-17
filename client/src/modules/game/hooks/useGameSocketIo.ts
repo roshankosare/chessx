@@ -1,4 +1,10 @@
-import { BoardPos, BoardPosElement, PieceColor, PieceType } from "@/types";
+import {
+  BoardPos,
+  BoardPosElement,
+  BoardState,
+  PieceColor,
+  PieceType,
+} from "@/types";
 import { useSocket } from "./useSocket";
 import { useBoardStore } from "../stores/useBoardStore";
 import { useCallback } from "react";
@@ -37,6 +43,7 @@ export const useGameSocketIo = () => {
   const setBoardState = useBoardStore((state) => state.setBoardState);
   const setBoardStateValue = useBoardStore((state) => state.setBoardStateValue);
   const getBoardStateValue = useBoardStore((state) => state.getBoardStateValue);
+  const resetBoardState = useBoardStore((state) => state.resetBoardState);
 
   const handleConnected = useCallback(
     (data: { socketId: string }) => {
@@ -112,6 +119,7 @@ export const useGameSocketIo = () => {
       oponent: { username: string; remainingTime: number };
       playingAs: string;
     }) => {
+      console.log("this runs");
       setBoardStateValue({
         playersInfo: {
           user: {
@@ -272,10 +280,62 @@ export const useGameSocketIo = () => {
                 : "timeout",
         });
         deleteSocketConnection();
-        localStorage.removeItem("boardState");
       }, 500);
     },
     [setBoardStateValue, deleteSocketConnection]
+  );
+
+  const handleGameNotFound = useCallback(() => {
+    resetBoardState();
+    const gameTime = getBoardStateValue("gameTime");
+    const start = getBoardStateValue("start");
+    const waiting = getBoardStateValue("waiting");
+    const gameStarted = getBoardStateValue("gameStarted");
+    const playingId = getBoardStateValue("playingId");
+    const matchType = getBoardStateValue("matchType");
+    const roomId = getBoardStateValue("roomId");
+    const diLevel = getBoardStateValue("diLevel");
+    const gameStatus = getBoardStateValue("gameStatus");
+    localStorage.setItem(
+      "boardState",
+      JSON.stringify({
+        gameTime: gameTime,
+        start: start,
+        waiting: waiting,
+        gameStarted: gameStarted,
+        playingId: playingId,
+        matchType: matchType,
+        roomId: roomId,
+        diLevel: diLevel,
+        gameStatus: gameStatus,
+      } as BoardState)
+    );
+    deleteSocketConnection();
+  }, [resetBoardState, getBoardStateValue, deleteSocketConnection]);
+
+  const handleReconnection = useCallback(
+    (data: { socketId: string }) => {
+      console.log(data);
+      setBoardStateValue({
+        playingId: data.socketId,
+      });
+      const socket = getSocketValue();
+      const roomId = getBoardStateValue("roomId");
+      if (socket) {
+        socket.emit("get-game-info", {
+          roomId: roomId,
+          playerId: data.socketId,
+        });
+        socket.emit("get-game-pos", {
+          roomId: roomId,
+          playerId: data.socketId,
+        });
+        setBoardStateValue({
+          playingId: data.socketId,
+        });
+      }
+    },
+    [getBoardStateValue, getSocketValue, setBoardStateValue]
   );
 
   return {
@@ -290,5 +350,7 @@ export const useGameSocketIo = () => {
     handleClockUpdate,
     handleGameOver,
     handleGameOverInfo,
+    handleReconnection,
+    handleGameNotFound,
   };
 };

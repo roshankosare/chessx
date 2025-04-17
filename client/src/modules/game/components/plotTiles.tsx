@@ -3,7 +3,7 @@ import { useSelectTile } from "../hooks/useSelectTile";
 import Tile from "./tile";
 import { useEffect, useState } from "react";
 import { useBoardStore } from "../stores/useBoardStore";
-import { useShallow } from "zustand/shallow";
+
 
 const PlotTiles = () => {
   const { selectSquare } = useSelectTile();
@@ -15,9 +15,7 @@ const PlotTiles = () => {
     })
   );
 
-  const [playingAS] = useBoardStore(
-    useShallow((state) => [state.boardState.playingAS])
-  );
+  const playingAS = useBoardStore((state) => state.boardState.playingAS);
 
   useEffect(() => {
     if (playingAS === "b") {

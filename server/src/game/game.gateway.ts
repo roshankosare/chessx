@@ -48,13 +48,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         client.emit('reconnection', {
           socketId: client.id,
         });
+        
         return;
       }
+
+      console.log(`user connected with id: ${client.id}`);
+      client.emit('connected', { socketId: client.id });
     } catch (error) {
       console.log(error);
     }
-    console.log(`user connected with id: ${client.id}`);
-    client.emit('connected', { socketId: client.id });
   }
 
   handleDisconnect(client: Socket) {
@@ -152,6 +154,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() data: { roomId: string; playerId: string },
     @ConnectedSocket() client: Socket,
   ) {
+    console.log("this runs");
     try {
       const roomId = data.roomId;
       const playerId = data.playerId;
