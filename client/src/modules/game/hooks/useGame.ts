@@ -55,7 +55,7 @@ export const useGame = () => {
       socket.off("game-over");
       socket.off("game-over-info");
       socket.off("reconnection");
-      socket.off("game-not-found")
+      socket.off("game-not-found");
     };
   }, [
     socket,
@@ -71,7 +71,7 @@ export const useGame = () => {
     handleGameOver,
     handleGameOverInfo,
     handleGameNotFound,
-    handleReconnection
+    handleReconnection,
   ]);
 
   useEffect(() => {
