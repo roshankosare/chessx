@@ -22,17 +22,36 @@ export const useLocalStorage = () => {
   useEffect(() => {
     // localStorage.removeItem("boardState");
     const result = localStorage.getItem("boardState");
+    const time = JSON.parse(localStorage.getItem("time") || "0");
+    const timeDiff =
+      Math.floor(Date.now() / 1000) -
+      (time.time || Math.floor(Date.now() / 1000) + 5000);
 
-    if (result) {
+    if (result && timeDiff < 1500) {
       const localState: BoardState = JSON.parse(result);
-      setBoardStateValue(localState);
+      setBoardStateValue({
+        gameTime: localState.gameTime,
+        start: localState.start,
+        waiting: localState.waiting,
+        gameStarted: localState.gameStarted,
+        playingId: localState.playingId,
+        matchType: localState.matchType,
+        roomId: localState.roomId,
+        diLevel: localState.diLevel,
+        gameStatus: localState.gameStatus,
+      });
     }
     setlocalStateLoaded(true);
   }, [setBoardStateValue]);
 
   useEffect(() => {
     if (localStateLoaded) {
-      console.log("local state updated");
+      localStorage.setItem(
+        "time",
+        JSON.stringify({
+          time: Math.floor(Date.now() / 1000),
+        })
+      );
       localStorage.setItem(
         "boardState",
         JSON.stringify({
